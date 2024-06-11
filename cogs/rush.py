@@ -1,85 +1,76 @@
 import discord
 from discord.ext import commands
+import cogs.helper.rushH as Helper
 
 players = []
 MAX_SLOTS = 4
 
-#helper func
-def buttonSetup(button, interaction, num):
-    global players
-    if button.style != discord.ButtonStyle.success:
-        button.style = discord.ButtonStyle.success
-        button.label = str(interaction.user)
 
-        # adding player
-        players[num - 1] = str(interaction.user)
-    else:
-        button.style = discord.ButtonStyle.secondary
-        button.label = f"Slot {num}"
-
-        #setting slot to 0
-        players[num - 1] = 0
-
-#Start of Views
-class gameSettings(discord.ui.View):
+# Start of Views
+class GameSettings(discord.ui.View):
     @discord.ui.select(
-        placeholder = "Pick a game",
-        min_values = 1,
-        max_values = 1,
-        row = 0,
-        options = [
+        placeholder="Pick a game",
+        min_values=1,
+        max_values=1,
+        row=0,
+        options=[
             discord.SelectOption(
-                label = "Elden Ring"
+                label="Elden Ring"
             ),
             discord.SelectOption(
-                label = "Hollow Knight"
+                label="Hollow Knight"
             ),
             discord.SelectOption(
-                label = "Mario 64"
+                label="Mario 64"
             )
         ]
     )
-
     async def select_callback(self, select, interaction):
         await interaction.response.send_message(f"You picked {select.values[0]}")
-class playerJoin(discord.ui.View):
+
+
+class PlayerJoin(discord.ui.View):
     global players
-    @discord.ui.button(label = "Slot 1", style = discord.ButtonStyle.secondary, row = 0)
+
+    @discord.ui.button(label="Slot 1", style=discord.ButtonStyle.secondary, row=0)
     async def slot1_callback(self, button, interaction):
-        buttonSetup(button, interaction, 1)
+        Helper.button_setup(button, str(interaction.user), 1, players)
         await interaction.response.edit_message(view=self)
 
-    @discord.ui.button(label = "Slot 2", style = discord.ButtonStyle.secondary, row = 0)
+    @discord.ui.button(label="Slot 2", style=discord.ButtonStyle.secondary, row=0)
     async def slot2_callback(self, button, interaction):
-        buttonSetup(button, interaction, 2)
+        Helper.button_setup(button, str(interaction.user), 2, players)
         await interaction.response.edit_message(view=self)
 
-    @discord.ui.button(label = "Slot 3", style = discord.ButtonStyle.secondary, row = 0)
+    @discord.ui.button(label="Slot 3", style=discord.ButtonStyle.secondary, row=0)
     async def slot3_callback(self, button, interaction):
-        buttonSetup(button, interaction, 3)
+        Helper.button_setup(button, str(interaction.user), 3, players)
         await interaction.response.edit_message(view=self)
 
-    @discord.ui.button(label = "Slot 4", style = discord.ButtonStyle.secondary, row = 0)
+    @discord.ui.button(label="Slot 4", style=discord.ButtonStyle.secondary, row=0)
     async def slot4_callback(self, button, interaction):
-        buttonSetup(button, interaction, 4)
+        Helper.button_setup(button, str(interaction.user), 4, players)
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Start Game", style=discord.ButtonStyle.primary, row=1)
-    async def startGame_callback(self, button, interaction):
+    async def start_game_callback(self, button, interaction):
         self.disable_all_items()
 
-        playersStr = 'Players: '
+        players_str = 'Players: '
         for name in players:
 
-            #empty slot == 0
+            # empty slot == 0
             if name != 0:
-                playersStr += f'{name}, '
+                players_str += f'{name}, '
 
-        #start of next view, switch self to next menu, problem with edit_message, need to change view
-        await interaction.response.edit_message(view=gameSettings)
+        # start of next view, switch self to next menu, problem with edit_message, need to change view
+        await interaction.response.send_message(players_str)
 
-#Start of cog class
-class rushMain(commands.Cog):
+        # await interaction.response.edit_message(view=self)
+
+
+# Start of cog class
+class RushMain(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -89,7 +80,8 @@ class rushMain(commands.Cog):
         global MAX_SLOTS
 
         players = MAX_SLOTS * [0]
-        await ctx.respond("Waiting for Players...", view=playerJoin())
+        await ctx.respond("Waiting for Players...", view=PlayerJoin())
+
 
 def setup(bot):
-    bot.add_cog(rushMain(bot))
+    bot.add_cog(RushMain(bot))

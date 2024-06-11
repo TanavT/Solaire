@@ -1,16 +1,21 @@
 import discord
 
-def buttonSetup(button, interaction, num):
-    global players
+
+def button_setup(button, name, num, players):
+
     if button.style != discord.ButtonStyle.success:
-        button.style = discord.ButtonStyle.success
-        button.label = str(interaction.user)
+        # checking to see if player already is registered
+        if not (name in players):
+            button.style = discord.ButtonStyle.success
+            button.label = name
 
-        # adding player
-        players[num - 1] = str(interaction.user)
+            # adding player
+            players[num - 1] = name
+
     else:
-        button.style = discord.ButtonStyle.secondary
-        button.label = f"Slot {num}"
+        if name == players[num - 1]:
+            button.style = discord.ButtonStyle.secondary
+            button.label = f"Slot {num}"
 
-        #setting slot to 0
-        players[num - 1] = 0
+            # setting slot to 0
+            players[num - 1] = 0
