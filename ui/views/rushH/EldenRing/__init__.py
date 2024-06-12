@@ -85,10 +85,9 @@ class EldenRing(BaseView):
             )
         ]
     )
-    @discord.ui.button(label="Next", style=discord.ButtonStyle.primary, row=1)
     async def goal_choice_callback(self, select, interaction):
         await interaction.response.defer()
 
-    @discord.ui.button(label="Next", style=discord.ButtonStyle.primary, row=1)
+    @discord.ui.button(label="Next", style=discord.ButtonStyle.primary, row=3)
     async def next_callback(self, button, interaction):
         await interaction.response.defer()

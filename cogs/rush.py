@@ -1,75 +1,16 @@
 import discord
 from discord.ext import commands
+from ui.views.rushH.GameSettings import GameSettings
+from ui.views.rushH.PlayerJoin import PlayerJoin
 import cogs.helper.rushH as Helper
 
-players = []
+
+views = None
+players = None
 MAX_SLOTS = 4
+game_choices = ["Elden Ring", "Hollow Knight", "Super Mario 64"]
 
 
-# Start of Views
-class GameSettings(discord.ui.View):
-    @discord.ui.select(
-        placeholder="Pick a game",
-        min_values=1,
-        max_values=1,
-        row=0,
-        options=[
-            discord.SelectOption(
-                label="Elden Ring"
-            ),
-            discord.SelectOption(
-                label="Hollow Knight"
-            ),
-            discord.SelectOption(
-                label="Mario 64"
-            )
-        ]
-    )
-    async def select_callback(self, select, interaction):
-        await interaction.response.send_message(f"You picked {select.values[0]}")
-
-
-class PlayerJoin(discord.ui.View):
-    global players
-
-    @discord.ui.button(label="Slot 1", style=discord.ButtonStyle.secondary, row=0)
-    async def slot1_callback(self, button, interaction):
-        Helper.button_setup(button, str(interaction.user), 1, players)
-        await interaction.response.edit_message(view=self)
-
-    @discord.ui.button(label="Slot 2", style=discord.ButtonStyle.secondary, row=0)
-    async def slot2_callback(self, button, interaction):
-        Helper.button_setup(button, str(interaction.user), 2, players)
-        await interaction.response.edit_message(view=self)
-
-    @discord.ui.button(label="Slot 3", style=discord.ButtonStyle.secondary, row=0)
-    async def slot3_callback(self, button, interaction):
-        Helper.button_setup(button, str(interaction.user), 3, players)
-        await interaction.response.edit_message(view=self)
-
-    @discord.ui.button(label="Slot 4", style=discord.ButtonStyle.secondary, row=0)
-    async def slot4_callback(self, button, interaction):
-        Helper.button_setup(button, str(interaction.user), 4, players)
-        await interaction.response.edit_message(view=self)
-
-    @discord.ui.button(label="Start Game", style=discord.ButtonStyle.primary, row=1)
-    async def start_game_callback(self, button, interaction):
-        self.disable_all_items()
-
-        players_str = 'Players: '
-        for name in players:
-
-            # empty slot == 0
-            if name != 0:
-                players_str += f'{name}, '
-
-        # start of next view, switch self to next menu, problem with edit_message, need to change view
-        await interaction.response.send_message(players_str)
-
-        # await interaction.response.edit_message(view=self)
-
-
-# Start of cog class
 class RushMain(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -78,9 +19,33 @@ class RushMain(commands.Cog):
     async def rush(self, ctx):
         global players
         global MAX_SLOTS
+        global views
+        global game_choices
 
-        players = MAX_SLOTS * [0]
-        await ctx.respond("Waiting for Players...", view=PlayerJoin())
+        # variables
+        players = MAX_SLOTS * [""]
+
+        # player_join_view = PlayerJoin("| Waiting for Players...", players)
+        # game_settings_view = GameSettings("| Game Selection...")
+        views = [PlayerJoin("| Waiting for Players...", players), GameSettings("| Game Settings...")]
+
+        await ctx.respond("| Starting Rush Mini-Game!")
+
+        # running rush
+        for view in views:
+            await ctx.send(view.message, view=view)
+            await view.wait()
+
+            if view.exit_triggered:
+                break
+
+            if view == views[1]:
+                if views[1].game_choice not in game_choices:
+                    await ctx.send("Could not find chosen game")
+                    raise ValueError("Error: Game Chosen is not Implemented")
+                views += [Helper.lookup_game_view(views[1].game_choice, game_choices)]
+
+        await ctx.send(f"The choice picked was {views[1].game_choice} and {views[1].mode_choice} and score is {views[1].score_choice}")
 
 
 def setup(bot):

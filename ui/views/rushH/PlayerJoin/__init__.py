@@ -4,8 +4,8 @@ import cogs.helper.rushH as Helper
 
 
 class PlayerJoin(BaseView):
-    def __init__(self, players: list):
-        super().__init__()
+    def __init__(self, message: str, players: list):
+        super().__init__(message)
         self.players = players
 
     @discord.ui.button(label="Slot 1", style=discord.ButtonStyle.secondary, row=0)
@@ -28,15 +28,25 @@ class PlayerJoin(BaseView):
         Helper.button_setup(button, str(interaction.user), 4, self.players)
         await interaction.response.edit_message(view=self)
 
-    @discord.ui.button(label="Start Game", style=discord.ButtonStyle.primary, row=1)
-    async def start_game_callback(self, button, interaction):
+    @discord.ui.button(label="Next", style=discord.ButtonStyle.primary, row=1)
+    async def next_callback(self, button, interaction):
+        for playerI in range(len(self.players)):
+            # will break if at least one slot is filled
+            if self.players[playerI] != "":
+                break
+
+            if playerI == len(self.players) - 1:
+                await interaction.response.send_message("No players found, cannot start game yet")
+                return
+
         self.disable_all_items()
 
         players_str = 'Players: '
         for name in self.players:
-            # empty slot == 0
-            if name != 0:
+            # empty slot == ""
+            if name != "":
                 players_str += f'{name}, '
 
         # start of next views, switch self to next menu, problem with edit_message, need to change views
-        await interaction.response.send_message(players_str)
+        await interaction.response.edit_message(view=self)
+        self.stop()

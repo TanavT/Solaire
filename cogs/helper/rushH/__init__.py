@@ -1,7 +1,8 @@
 import discord
+from ui.views.rushH.EldenRing import EldenRing
 
 
-def button_setup(button, name, num, players):
+def button_setup(button, name: str, num: int, players: list[str]):
 
     if button.style != discord.ButtonStyle.success:
         # checking to see if player already is registered
@@ -18,4 +19,14 @@ def button_setup(button, name, num, players):
             button.label = f"Slot {num}"
 
             # setting slot to 0
-            players[num - 1] = 0
+            players[num - 1] = ""
+
+
+def lookup_game_view(game_name: str, game_choices: list[str]):
+    match game_name:
+        case "Elden Ring":
+            return EldenRing("Elden Ring Settings...")
+        case "Hollow Knight":
+            pass
+        case "Super Mario 64":
+            pass
