@@ -1,5 +1,5 @@
 import discord
-from ui.views.rushH.EldenRing import EldenRing
+from ui.views.rushH.gameViews.EldenRing import EldenRing
 
 
 def button_setup(button, name: str, num: int, players: list[str]):

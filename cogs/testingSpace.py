@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-
+import requests
 
 class PlayerJoinView(discord.ui.View):
     @discord.ui.button(label="Slot 1", style=discord.ButtonStyle.secondary, row=0)
@@ -64,6 +64,13 @@ class TestingSpaceClass(commands.Cog):
     @discord.slash_command()
     async def player_slots(self, ctx):
         await ctx.respond("Waiting for Players...", view=PlayerJoinView())
+
+    @discord.slash_command()
+    async def api_pull(self, ctx):
+        response = requests.get("https://eldenring.fanapis.com/api/graphql")
+        # below broken
+        print(response.json())
+        await ctx.respond("api pulled")
 
 
 def setup(bot):

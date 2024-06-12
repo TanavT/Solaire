@@ -25,9 +25,8 @@ class RushMain(commands.Cog):
         # variables
         players = MAX_SLOTS * [""]
 
-        # player_join_view = PlayerJoin("| Waiting for Players...", players)
-        # game_settings_view = GameSettings("| Game Selection...")
-        views = [PlayerJoin("| Waiting for Players...", players), GameSettings("| Game Settings...")]
+        views = [PlayerJoin("| Waiting for Players...", players), GameSettings("| Game Settings..."), None,
+                 ]
 
         await ctx.respond("| Starting Rush Mini-Game!")
 
@@ -43,7 +42,7 @@ class RushMain(commands.Cog):
                 if views[1].game_choice not in game_choices:
                     await ctx.send("Could not find chosen game")
                     raise ValueError("Error: Game Chosen is not Implemented")
-                views += [Helper.lookup_game_view(views[1].game_choice, game_choices)]
+                views[2] = Helper.lookup_game_view(views[1].game_choice, game_choices)
 
         await ctx.send(f"The choice picked was {views[1].game_choice} and {views[1].mode_choice} and score is {views[1].score_choice}")
 
