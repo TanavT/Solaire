@@ -89,11 +89,11 @@ class TestingSpaceClass(commands.Cog):
         response = requests.post(url=url, json={"query": body})
         print("response status code: ", response.status_code)
         if response.status_code == 200:  # checking if successfully received
-            #print(response.text[16:-3])
+            # print(response.text[16:-3])
             responses_list = json.loads(response.text[16:-3])
             # print("response : ", response)
             for index in range(len(responses_list)):
-               # print("name: ", responses_list[index]["name"], ", region", responses_list[index]["region"], ", location: ", responses_list[index]["location"], ", image: ", responses_list[index]["image"],)
+                # print("name: ", responses_list[index]["name"], ", region", responses_list[index]["region"], ", location: ", responses_list[index]["location"], ", image: ", responses_list[index]["image"],)
                 print(responses_list[index])
         await ctx.respond("api pulled")
 

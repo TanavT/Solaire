@@ -2,18 +2,22 @@ import discord
 from ui.views.BaseView import BaseView
 import json
 import requests
+import cogs.helper.rushH.helper_funcs as helper
 
 NUMBER_OF_REGIONS = 10
+NUM_CHOICES = 3
 
 
 # will return
 class EldenRing(BaseView):
-    def __init__(self, message: str):
-        super().__init__(message)
+    def __init__(self, message: str, player: list):
+        super().__init__(message, player)
+        self.__players_ready = []
         self.__region_choices = None
         self.selection_choice = None
         self.__goal_choices = None
         self.goal_list = []
+        self.__choices_made = NUM_CHOICES * [False]
 
     @discord.ui.select(
         placeholder="Regions (Nothing Selected)",
@@ -84,10 +88,13 @@ class EldenRing(BaseView):
         ]
     )
     async def region_choice_callback(self, select, interaction):
+        self.__choices_made[0] = True
         self.__region_choices = []
         for region in select.values:
             self.__region_choices += [region]
-        await interaction.response.defer()
+        await interaction.response.send_message(f"Player '{str(interaction.user)}' chose region: "
+                                                f"'{self.__region_choices}'",
+                                                delete_after=3)
 
     @discord.ui.select(
         placeholder="Selection Pattern (Nothing Selected)",
@@ -106,8 +113,11 @@ class EldenRing(BaseView):
         ]
     )
     async def selection_choice_callback(self, select, interaction):
+        self.__choices_made[1] = True
         self.selection_choice = select.values[0]
-        await interaction.response.defer()
+        await interaction.response.send_message(f"Player '{str(interaction.user)}' chose pattern: "
+                                                f"'{self.selection_choice}'",
+                                                delete_after=3)
 
     @discord.ui.select(
         placeholder="Goal (Nothing Selected)",
@@ -127,13 +137,30 @@ class EldenRing(BaseView):
         ]
     )
     async def goal_choice_callback(self, select, interaction):
+        self.__choices_made[2] = True
         self.__goal_choices = []
         for goal in select.values:
             self.__goal_choices += [goal]
-        await interaction.response.defer()
+        await interaction.response.send_message(f"Player '{str(interaction.user)}' chose goals: "
+                                                f"'{self.__goal_choices}'",
+                                                delete_after=3)
 
     @discord.ui.button(label="Next", style=discord.ButtonStyle.primary, row=3)
     async def next_callback(self, button, interaction):
+        current_user = str(interaction.user)
+        end_conditions = helper.check_end_early(self.__choices_made, current_user, self.players, self.__players_ready)
+        # checking if all choices were made
+        if end_conditions[0]:
+            await interaction.response.send_message("Please select a choice from each section and try again",
+                                                    delete_after=5)
+            return
+
+        if end_conditions[1]:
+            await interaction.response.send_message(f"Player {current_user} has readied;"
+                                                    f" {len(self.__players_ready)} players ready.",
+                                                    delete_after=5)
+            return
+
         # pulls from elden_ring database, elden ring api needs to be running during this
         query_url = "http://localhost:3000/api/graphql"  # assumes the api is running on this computer
 
@@ -163,4 +190,8 @@ class EldenRing(BaseView):
         # print(self.goal_list)
         for index in range(len(self.goal_list)):
             print(self.goal_list[index])
-        await interaction.response.defer()
+
+        # ending view
+        self.disable_all_items()
+        await interaction.response.edit_message(view=self)
+        self.stop()

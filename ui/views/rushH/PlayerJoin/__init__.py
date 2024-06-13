@@ -1,31 +1,30 @@
 import discord
 from ui.views.BaseView import BaseView
-import cogs.helper.rushH as Helper
+import cogs.helper.rushH.helper_funcs as helper
 
 
 class PlayerJoin(BaseView):
     def __init__(self, message: str, players: list):
-        super().__init__(message)
-        self.players = players
+        super().__init__(message, players)
 
     @discord.ui.button(label="Slot 1", style=discord.ButtonStyle.secondary, row=0)
     async def slot1_callback(self, button, interaction):
-        Helper.button_setup(button, str(interaction.user), 1, self.players)
+        helper.button_setup(button, str(interaction.user), 1, self.players)
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Slot 2", style=discord.ButtonStyle.secondary, row=0)
     async def slot2_callback(self, button, interaction):
-        Helper.button_setup(button, str(interaction.user), 2, self.players)
+        helper.button_setup(button, str(interaction.user), 2, self.players)
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Slot 3", style=discord.ButtonStyle.secondary, row=0)
     async def slot3_callback(self, button, interaction):
-        Helper.button_setup(button, str(interaction.user), 3, self.players)
+        helper.button_setup(button, str(interaction.user), 3, self.players)
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Slot 4", style=discord.ButtonStyle.secondary, row=0)
     async def slot4_callback(self, button, interaction):
-        Helper.button_setup(button, str(interaction.user), 4, self.players)
+        helper.button_setup(button, str(interaction.user), 4, self.players)
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Next", style=discord.ButtonStyle.primary, row=1)
@@ -36,7 +35,8 @@ class PlayerJoin(BaseView):
                 break
 
             if playerI == len(self.players) - 1:
-                await interaction.response.send_message("No players found, cannot start game yet")
+                await interaction.response.send_message("No players found, cannot start game yet",
+                                                        delete_after=5)
                 return
 
         self.disable_all_items()
