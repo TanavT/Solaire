@@ -87,7 +87,6 @@ class TestingSpaceClass(commands.Cog):
         # This database is not consistent with locations and regions, I will try to fix later ig
 
         response = requests.post(url=url, json={"query": body})
-        # below broken
         print("response status code: ", response.status_code)
         if response.status_code == 200:  # checking if successfully received
             #print(response.text[16:-3])

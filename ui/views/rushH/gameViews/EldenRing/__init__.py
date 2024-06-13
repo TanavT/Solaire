@@ -1,12 +1,19 @@
 import discord
 from ui.views.BaseView import BaseView
+import json
+import requests
 
 NUMBER_OF_REGIONS = 10
 
 
+# will return
 class EldenRing(BaseView):
     def __init__(self, message: str):
         super().__init__(message)
+        self.__region_choices = None
+        self.selection_choice = None
+        self.__goal_choices = None
+        self.goal_list = []
 
     @discord.ui.select(
         placeholder="Regions (Nothing Selected)",
@@ -57,6 +64,9 @@ class EldenRing(BaseView):
                 label="Leyndell, Royal Capital"
             ),
             discord.SelectOption(
+                label="Moonlight Altar"
+            ),
+            discord.SelectOption(
                 label="Mountaintops of the Giants"
             ),
             discord.SelectOption(
@@ -74,6 +84,9 @@ class EldenRing(BaseView):
         ]
     )
     async def region_choice_callback(self, select, interaction):
+        self.__region_choices = []
+        for region in select.values:
+            self.__region_choices += [region]
         await interaction.response.defer()
 
     @discord.ui.select(
@@ -93,6 +106,7 @@ class EldenRing(BaseView):
         ]
     )
     async def selection_choice_callback(self, select, interaction):
+        self.selection_choice = select.values[0]
         await interaction.response.defer()
 
     @discord.ui.select(
@@ -113,20 +127,40 @@ class EldenRing(BaseView):
         ]
     )
     async def goal_choice_callback(self, select, interaction):
+        self.__goal_choices = []
+        for goal in select.values:
+            self.__goal_choices += [goal]
         await interaction.response.defer()
 
     @discord.ui.button(label="Next", style=discord.ButtonStyle.primary, row=3)
     async def next_callback(self, button, interaction):
         # pulls from elden_ring database, elden ring api needs to be running during this
         query_url = "http://localhost:3000/api/graphql"  # assumes the api is running on this computer
-        query_body = """ 
-                query {
-                    boss(region: "Limgrave",  limit: 50) {
-                        name
-                        location
-                        image
-                        difficulty
-                    }
-                }
-                """
+
+        # needs to be nested loops when implementing choices other than bosses, will do later
+        for region in self.__region_choices:
+            query_request = f"""
+                    query {{
+                        boss(region: "{region}",  limit: 50) {{
+                            name
+                            location
+                            image
+                            difficulty
+                        }}
+                    }}
+                    """
+            # getting response
+            api_response = requests.post(url=query_url, json={"query": query_request})
+            # print(self.__region_choices)
+            # print("response status code: ", api_response.status_code)  # for debugging purpose, will print in terminal
+            if api_response.status_code == 200:  # will be 200 if api request was successful
+                responses_list = json.loads(api_response.text[16:-3])
+                #  index in range(len(responses_list)):
+                #    self.__goal_choices += [responses_list[index]]
+                #    print(responses_list[index])
+                self.goal_list += responses_list
+
+        # print(self.goal_list)
+        for index in range(len(self.goal_list)):
+            print(self.goal_list[index])
         await interaction.response.defer()
