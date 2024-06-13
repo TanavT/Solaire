@@ -1,6 +1,10 @@
 import discord
 from discord.ext import commands
 import requests
+import json
+# need to get a better database, problem is that there is no others I can find
+# This database is not consistent with locations and regions, I will try to fix later ig
+
 
 class PlayerJoinView(discord.ui.View):
     @discord.ui.button(label="Slot 1", style=discord.ButtonStyle.secondary, row=0)
@@ -67,9 +71,31 @@ class TestingSpaceClass(commands.Cog):
 
     @discord.slash_command()
     async def api_pull(self, ctx):
-        response = requests.get("https://eldenring.fanapis.com/api/graphql")
+        url = "http://localhost:3000/api/graphql"
+        body = """ 
+        query {
+            boss(region: "Limgrave",  limit: 50) {
+                name
+                location
+                image
+                difficulty
+            }
+        }
+        """
+
+        # need to get a better database, problem is that there is no others I can find
+        # This database is not consistent with locations and regions, I will try to fix later ig
+
+        response = requests.post(url=url, json={"query": body})
         # below broken
-        print(response.json())
+        print("response status code: ", response.status_code)
+        if response.status_code == 200:  # checking if successfully received
+            #print(response.text[16:-3])
+            responses_list = json.loads(response.text[16:-3])
+            # print("response : ", response)
+            for index in range(len(responses_list)):
+               # print("name: ", responses_list[index]["name"], ", region", responses_list[index]["region"], ", location: ", responses_list[index]["location"], ", image: ", responses_list[index]["image"],)
+                print(responses_list[index])
         await ctx.respond("api pulled")
 
 

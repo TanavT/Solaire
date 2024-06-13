@@ -24,26 +24,53 @@ class EldenRing(BaseView):
                 label="Liurnia of the Lakes"
             ),
             discord.SelectOption(
-                label="Caelid"
+                label="Siofra River"
             ),
             discord.SelectOption(
-                label="Mt. Gelmir"
+                label="Ainsel River"
+            ),
+            discord.SelectOption(
+                label="Caelid"
             ),
             discord.SelectOption(
                 label="Altus Plateau"
             ),
             discord.SelectOption(
+                label="Nokron, Eternal City"
+            ),
+            discord.SelectOption(
+                label="Deeproot Depths"
+            ),
+            discord.SelectOption(
+                label="Capital Outskirts"
+            ),
+            discord.SelectOption(
+                label="Mount Gelmir"
+            ),
+            discord.SelectOption(
+                label="Lake of Rot"
+            ),
+            discord.SelectOption(
+                label="Dragonbarrow"
+            ),
+            discord.SelectOption(
                 label="Leyndell, Royal Capital"
             ),
             discord.SelectOption(
-                label="Mountaintop of the Giants"
+                label="Mountaintops of the Giants"
             ),
             discord.SelectOption(
                 label="Consecrated Snowfield"
             ),
             discord.SelectOption(
-                label="Haligtree"
-            )
+                label="Mohgwyn Palace"
+            ),
+            discord.SelectOption(
+                label="Miquella's Haligtree"
+            ),
+            discord.SelectOption(
+                label="Leyndell, Ashen Capital"
+            ),
         ]
     )
     async def region_choice_callback(self, select, interaction):
@@ -90,4 +117,16 @@ class EldenRing(BaseView):
 
     @discord.ui.button(label="Next", style=discord.ButtonStyle.primary, row=3)
     async def next_callback(self, button, interaction):
+        # pulls from elden_ring database, elden ring api needs to be running during this
+        query_url = "http://localhost:3000/api/graphql"  # assumes the api is running on this computer
+        query_body = """ 
+                query {
+                    boss(region: "Limgrave",  limit: 50) {
+                        name
+                        location
+                        image
+                        difficulty
+                    }
+                }
+                """
         await interaction.response.defer()

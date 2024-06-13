@@ -22,6 +22,7 @@ def button_setup(button, name: str, num: int, players: list[str]):
             players[num - 1] = ""
 
 
+# bot will contain list of bosses and their data
 def lookup_game_view(game_name: str, game_choices: list[str]):
     match game_name:
         case "Elden Ring":
@@ -30,3 +31,5 @@ def lookup_game_view(game_name: str, game_choices: list[str]):
             pass
         case "Super Mario 64":
             pass
+
+
