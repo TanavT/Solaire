@@ -6,6 +6,7 @@ import cogs.helper.rushH.helper_funcs as helper
 
 NUMBER_OF_REGIONS = 10
 NUM_CHOICES = 3
+QUERY_URL = "http://localhost:3000/api/graphql"
 
 
 # output is list of goals found in goal_list, contains name, image, region, location, and difficulty
@@ -77,6 +78,9 @@ class EldenRing(BaseView):
                 label="Consecrated Snowfield"
             ),
             discord.SelectOption(
+                label="Crumbling Farum Azula"
+            ),
+            discord.SelectOption(
                 label="Mohgwyn Palace"
             ),
             discord.SelectOption(
@@ -126,13 +130,13 @@ class EldenRing(BaseView):
         row=2,
         options=[
             discord.SelectOption(
-                label="Bosses",
+                label="Boss",
             ),
             discord.SelectOption(
-                label="Weapons",
+                label="Weapon",
             ),
             discord.SelectOption(
-                label="Spells/Incantations/AoW",
+                label="Spell/Incantation/AoW",
             )
         ]
     )
@@ -140,7 +144,7 @@ class EldenRing(BaseView):
         self.__choices_made[2] = True
         self.__goal_choices = []
         for goal in select.values:
-            self.__goal_choices += [goal]
+            self.__goal_choices += [goal.lower()]
         await interaction.response.send_message(f"Player '{str(interaction.user)}' chose goals: "
                                                 f"'{self.__goal_choices}'",
                                                 delete_after=3)
@@ -162,37 +166,33 @@ class EldenRing(BaseView):
             return
 
         # pulls from elden_ring database, elden ring api needs to be running during this
-        query_url = "http://localhost:3000/api/graphql"  # assumes the api is running on this computer
+        QUERY_URL = "http://localhost:3000/api/graphql"  # assumes the api is running on this computer
 
         # needs to be nested loops when implementing choices other than bosses, will do later
-        for region in self.__region_choices:
-            query_request = f"""
-                    query {{
-                        boss(region: "{region}",  limit: 50) {{
-                            name
-                            region
-                            location
-                            image
-                            difficulty
+        for goal in self.__goal_choices:
+            for region in self.__region_choices:
+                query_request = f"""
+                        query {{
+                            {goal}(region: "{region}",  limit: 50) {{
+                                name
+                                region
+                                location
+                                image
+                                difficulty
+                            }}
                         }}
-                    }}
-                    """
-            # getting response
-            api_response = requests.post(url=query_url, json={"query": query_request})
-            # print(self.__region_choices)
-            # print("response status code: ", api_response.status_code)  # for debugging purpose, will print in terminal
-            if api_response.status_code == 200:  # will be 200 if api request was successful
-                responses_list = json.loads(api_response.text[16:-3])
-                #  index in range(len(responses_list)):
-                #    self.__goal_choices += [responses_list[index]]
-                #    print(responses_list[index])
-                self.goal_list += responses_list
+                        """
+                # getting response
+                api_response = requests.post(url=QUERY_URL, json={"query": query_request})
+                if api_response.status_code == 200:  # will be 200 if api request was successful
+                    responses_list = json.loads(api_response.text[16:-3])
+                    self.goal_list += responses_list
 
-        # print(self.goal_list)
-        for index in range(len(self.goal_list)):
-            print(self.goal_list[index])
+            # print(self.goal_list)
+            for index in range(len(self.goal_list)):
+                print(self.goal_list[index])
 
-        # ending view
-        self.disable_all_items()
-        await interaction.response.edit_message(view=self)
-        self.stop()
+            # ending view
+            self.disable_all_items()
+            await interaction.response.edit_message(view=self)
+            self.stop()
