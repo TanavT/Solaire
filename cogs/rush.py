@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from ui.views.rushH.GameSettings import GameSettings
 from ui.views.rushH.PlayerJoin import PlayerJoin
+from ui.views.rushH.RunningGame import RunningGame
+
 import cogs.helper.rushH.lookup_game as lookup
 
 
@@ -25,12 +27,13 @@ class RushMain(commands.Cog):
         # variables
         players = MAX_SLOTS * [""]
 
-        views = [PlayerJoin("| Waiting for Players...", players), GameSettings("| Game Settings...", players), None,
-                 ]
+        views = [PlayerJoin("| Waiting for Players...", players), GameSettings("| Game Settings...", players),
+                 None, None]
 
         await ctx.respond("| Starting Rush Mini-Game!")
 
         # running rush
+        iterator = 0
         for view in views:
 
             await ctx.send(view.message, view=view)
@@ -39,11 +42,14 @@ class RushMain(commands.Cog):
             if view.exit_triggered:
                 break
 
-            if view == views[1]:
-                if views[1].game_choice not in game_choices:
+            if iterator == 1:
+                if views[iterator].game_choice not in game_choices:
                     await ctx.send("Could not find chosen game")
                     raise ValueError("Error: Game Chosen is not Implemented")
-                views[2] = lookup.lookup_game_view(views[1].game_choice, game_choices, players)
+                views[iterator+1] = lookup.lookup_game_view(views[1].game_choice, game_choices, players)
+            if iterator == 2:
+                views[iterator+1] = RunningGame("Game Started!", players, views[iterator].goal_list)
+            iterator += 1
 
         # await ctx.send(f"The choice picked was {views[1].game_choice} and {views[1].mode_choice} and score is
         # {views[1].score_choice}")

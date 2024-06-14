@@ -8,7 +8,7 @@ NUMBER_OF_REGIONS = 10
 NUM_CHOICES = 3
 
 
-# will return
+# output is list of goals found in goal_list, contains name, image, region, location, and difficulty
 class EldenRing(BaseView):
     def __init__(self, message: str, player: list):
         super().__init__(message, player)
@@ -170,6 +170,7 @@ class EldenRing(BaseView):
                     query {{
                         boss(region: "{region}",  limit: 50) {{
                             name
+                            region
                             location
                             image
                             difficulty
