@@ -4,9 +4,9 @@ import random
 
 
 class RunningGame(BaseView):
-    def __init__(self, message: str, players: list, goal_list: list, pattern_choice: str,
+    def __init__(self, message_str: str, players: list, goal_list: list, pattern_choice: str,
                  color: discord.Color, max_score: str, game_mode: str):
-        super().__init__(message, players, None)
+        super().__init__(message_str, players, None)
         self.goal_list = goal_list
         self.__goal_num = 0
         self.color = color
@@ -38,7 +38,7 @@ class RunningGame(BaseView):
             if player[1] > winner[1]:
                 winner = player
         self.clear_items()
-        await interaction.response.edit_message(content=f"| {winner[0]} wins with {winner[1]} points!", embed=None,
+        await interaction.response.edit_message(content=f"| {winner[0].upper()} wins with {winner[1]} points!", embed=None,
                                                 view=self)
         self.stop()
         # await interaction.response.send_message(f"{winner[0]} wins with {winner[1]} points!")

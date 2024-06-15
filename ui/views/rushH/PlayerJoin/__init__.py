@@ -4,8 +4,8 @@ import cogs.helper.rushH.helper_funcs as helper
 
 
 class PlayerJoin(BaseView):
-    def __init__(self, message: str, players: list):
-        super().__init__(message, players, 300)
+    def __init__(self, message_str: str, players: list):
+        super().__init__(message_str, players, 300)
 
     @discord.ui.button(label="Slot 1", style=discord.ButtonStyle.secondary, row=0)
     async def slot1_callback(self, button, interaction):

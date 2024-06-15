@@ -4,12 +4,20 @@ import cogs.helper.rushH.helper_funcs as helper
 
 class BaseView (discord.ui.View):
     # add timeout later
-    def __init__(self, message: str, players: list, time_on=300):
+    def __init__(self, message_str: str, players: list, time_on=300):
         super().__init__(timeout=time_on)
         self.__players_ready = []
         self.players = players
-        self.message = message
+        self.message_str = message_str
         self.exit_triggered = False
+
+    async def update_settings(self, interaction, *argv):
+        setting_str = str(self.message_str) + "  "
+        for arg in argv:
+            if arg is None:
+                continue
+            setting_str += str(arg) + '; '
+        await interaction.response.edit_message(view=self, content=setting_str[:-2])
 
     @discord.ui.button(label="Exit", style=discord.ButtonStyle.danger, row=4)
     async def exit_callback(self, button, interaction):
@@ -27,5 +35,5 @@ class BaseView (discord.ui.View):
         self.exit_triggered = True
         self.stop()
 
-    async def on_error(self, error, item, interaction):
-        await interaction.response.send_message(f'Error: {str(error)}')
+    # async def on_error(self, error, item, interaction):
+    #     await interaction.response.send_message(f'Error: {str(error)}')

@@ -35,7 +35,7 @@ class RushMain(commands.Cog):
         # running rush
         iterator = 0
         for view in views:
-            await ctx.send(content=view.message, view=view)
+            await ctx.send(content=view.message_str, view=view)
             await view.wait()
 
             if view.exit_triggered:
