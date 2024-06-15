@@ -6,6 +6,7 @@ import cogs.helper.rushH.helper_funcs as helper
 
 NUMBER_OF_REGIONS = 10
 NUM_CHOICES = 3
+# pulls from elden_ring database, elden ring api needs to be running during this
 QUERY_URL = "http://localhost:3000/api/graphql"
 
 
@@ -15,10 +16,11 @@ class EldenRing(BaseView):
         super().__init__(message, player)
         self.__players_ready = []
         self.__region_choices = None
-        self.selection_choice = None
+        self.pattern_choice = None
         self.__goal_choices = None
         self.goal_list = []
         self.__choices_made = NUM_CHOICES * [False]
+        self.color = discord.Color.dark_gold()
 
     @discord.ui.select(
         placeholder="Regions (Nothing Selected)",
@@ -101,26 +103,34 @@ class EldenRing(BaseView):
                                                 delete_after=3)
 
     @discord.ui.select(
-        placeholder="Selection Pattern (Nothing Selected)",
+        placeholder="Goal Pattern (Nothing Selected)",
         min_values=1,
         max_values=1,
         row=1,
         options=[
             discord.SelectOption(
-                label="Progressive",
+                label="Progressive Choice",
                 description="Earlier/Easier Content at the beginning, Later/Harder content at the end"
             ),
             discord.SelectOption(
-                label="Random",
+                label="Random Choice",
+                description="Pseudo-random (look it up) selection"
+            ),
+            discord.SelectOption(
+                label="Progressive Choice& Ramping",
+                description="Earlier/Easier Content at the beginning, Later/Harder content at the end"
+            ),
+            discord.SelectOption(
+                label="Random ",
                 description="Pseudo-random (look it up) selection"
             )
         ]
     )
-    async def selection_choice_callback(self, select, interaction):
+    async def pattern_choice_callback(self, select, interaction):
         self.__choices_made[1] = True
-        self.selection_choice = select.values[0]
+        self.pattern_choice = select.values[0]
         await interaction.response.send_message(f"Player '{str(interaction.user)}' chose pattern: "
-                                                f"'{self.selection_choice}'",
+                                                f"'{self.pattern_choice}'",
                                                 delete_after=3)
 
     @discord.ui.select(
@@ -165,9 +175,6 @@ class EldenRing(BaseView):
                                                     delete_after=5)
             return
 
-        # pulls from elden_ring database, elden ring api needs to be running during this
-        QUERY_URL = "http://localhost:3000/api/graphql"  # assumes the api is running on this computer
-
         # needs to be nested loops when implementing choices other than bosses, will do later
         for goal in self.__goal_choices:
             for region in self.__region_choices:
@@ -189,8 +196,8 @@ class EldenRing(BaseView):
                     self.goal_list += responses_list
 
             # print(self.goal_list)
-            for index in range(len(self.goal_list)):
-                print(self.goal_list[index])
+            # for index in range(len(self.goal_list)):
+            #     print(self.goal_list[index])
 
             # ending view
             self.disable_all_items()

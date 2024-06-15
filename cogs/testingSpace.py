@@ -2,11 +2,20 @@ import discord
 from discord.ext import commands
 import requests
 import json
+from discord.ext.pages import Paginator, Page
+import discord.ui.view
+from ui.views.rushH.PlayerJoin import PlayerJoin
+
 # need to get a better database, problem is that there is no others I can find
 # This database is not consistent with locations and regions, I will try to fix later ig
 
 
 class PlayerJoinView(discord.ui.View):
+
+    def __init__(self):
+        super().__init__()
+        self.num = 0
+
     @discord.ui.button(label="Slot 1", style=discord.ButtonStyle.secondary, row=0)
     async def slot1_callback(self, button, interaction):
         if button.style != discord.ButtonStyle.success:
@@ -54,8 +63,6 @@ class PlayerJoinView(discord.ui.View):
 
 
 class TestingSpaceClass(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
 
     @discord.slash_command()
     async def greetings(self, ctx):
@@ -96,6 +103,46 @@ class TestingSpaceClass(commands.Cog):
                 # print("name: ", responses_list[index]["name"], ", region", responses_list[index]["region"], ", location: ", responses_list[index]["location"], ", image: ", responses_list[index]["image"],)
                 print(responses_list[index])
         await ctx.respond("api pulled")
+
+    @discord.slash_command()
+    async def changing_pages(self, ctx):
+        embed = discord.Embed(
+            title="My Amazing Embed",
+            description="Embeds are super easy, barely an inconvenience.",
+            color=discord.Colour.blurple(),  # Pycord provides a class with default colors you can choose from
+        )
+        embed.add_field(name="A Normal Field",
+                        value="A really nice field with some information. **The description as well as the fields support markdown!**")
+
+        embed.add_field(name="Inline Field 1", value="Inline Field 1", inline=True)
+        embed.add_field(name="Inline Field 2", value="Inline Field 2", inline=True)
+        embed.add_field(name="Inline Field 3", value="Inline Field 3", inline=True)
+
+        embed.set_footer(text="Footer! No markdown here.")  # footers can have icons too
+        embed.set_author(name="Pycord Team", icon_url="https://example.com/link-to-my-image.png")
+        embed.set_thumbnail(url="https://example.com/link-to-my-thumbnail.png")
+        embed.set_image(url="https://eldenring.wiki.fextralife.com/file/Elden-Ring/elden_ring_artwork_elden_ring_wiki_guide_7_300px.jpg")
+
+        await ctx.respond("Hello! Here's a cool embed.", embed=embed, view=PlayerJoin("| Waiting for Players...",[]))  # Send the embed with some text
+
+# class TestingEmbedView(discord.ui.View):
+#     def __init__(self, ctx):
+#         super().__init__()
+#         self.num = 0
+#
+#     async def send(self,ctx):
+#         self.message = await ctx.send(view=self)
+#         await self.update_message()
+#
+#     def create_embed(self):
+#         embed = discord.Embed(title=f"User List Page {self.num}")
+#         return embed
+#     async def update_message(self,ctx):
+#         await self.message.edit(embed=self.create_embed(), view=self)
+#
+#     @discord.ui.button(label="Incrementor", style=discord.ButtonStyle.secondary, row=0)
+#     async def embed_test(self, button: discord.ui.Button, interaction: discord.Interaction):
+#         await interaction.response.defer()
 
 
 def setup(bot):

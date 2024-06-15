@@ -10,7 +10,7 @@ import cogs.helper.rushH.lookup_game as lookup
 views = None
 players = None
 MAX_SLOTS = 4
-game_choices = ["Elden Ring", "Hollow Knight", "Super Mario 64"]
+game_choices = ["Elden Ring", "Hollow Knight", "Super Mario Odyssey"]
 
 
 class RushMain(commands.Cog):
@@ -35,8 +35,9 @@ class RushMain(commands.Cog):
         # running rush
         iterator = 0
         for view in views:
-
-            await ctx.send(view.message, view=view)
+            print("got to before ctx.send")
+            await ctx.send(content=view.message, view=view)
+            print("got to after ctx.send")
             await view.wait()
 
             if view.exit_triggered:
@@ -48,7 +49,12 @@ class RushMain(commands.Cog):
                     raise ValueError("Error: Game Chosen is not Implemented")
                 views[iterator+1] = lookup.lookup_game_view(views[1].game_choice, game_choices, players)
             if iterator == 2:
-                views[iterator+1] = RunningGame("Game Started!", players, views[iterator].goal_list)
+                print("got to iterator 2")
+                running_game_view = RunningGame("| Game Started!", players, views[iterator].goal_list,
+                                                views[iterator].pattern_choice,  views[iterator].color)
+                views[iterator+1] = running_game_view
+                print(f"{players}\n{views[iterator].goal_list}\n{views[iterator].pattern_choice}\n"
+                      f"{str(views[iterator].color)}")
             iterator += 1
 
         # await ctx.send(f"The choice picked was {views[1].game_choice} and {views[1].mode_choice} and score is

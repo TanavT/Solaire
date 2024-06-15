@@ -6,8 +6,8 @@ from ui.views.rushH.gameViews.EldenRing import EldenRing
 def lookup_game_view(game_name: str, game_choices: list[str], players: list[str]):
     match game_name:
         case "Elden Ring":
-            return EldenRing("Elden Ring Settings...", players)
+            return EldenRing("| Elden Ring Settings...", players)
         case "Hollow Knight":
             pass
-        case "Super Mario 64":
+        case "Super Mario Odyssey":
             pass
