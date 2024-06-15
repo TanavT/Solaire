@@ -121,7 +121,8 @@ class TestingSpaceClass(commands.Cog):
         embed.set_footer(text="Footer! No markdown here.")  # footers can have icons too
         embed.set_author(name="Pycord Team", icon_url="https://example.com/link-to-my-image.png")
         embed.set_thumbnail(url="https://example.com/link-to-my-thumbnail.png")
-        embed.set_image(url="https://eldenring.wiki.fextralife.com/file/Elden-Ring/elden_ring_artwork_elden_ring_wiki_guide_7_300px.jpg")
+        embed.set_image(url="https://eldenring.wiki.fextralife.com/file/Elden-Ring/"
+                            "elden_ring_artwork_elden_ring_wiki_guide_7_300px.jpg")
 
         await ctx.respond("Hello! Here's a cool embed.", embed=embed, view=PlayerJoin("| Waiting for Players...",[]))  # Send the embed with some text
 

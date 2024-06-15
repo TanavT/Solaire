@@ -35,26 +35,24 @@ class RushMain(commands.Cog):
         # running rush
         iterator = 0
         for view in views:
-            print("got to before ctx.send")
             await ctx.send(content=view.message, view=view)
-            print("got to after ctx.send")
             await view.wait()
 
             if view.exit_triggered:
                 break
-
-            if iterator == 1:
+            if iterator == 0:
+                while "" in players:
+                    players.remove("")
+            elif iterator == 1:
                 if views[iterator].game_choice not in game_choices:
                     await ctx.send("Could not find chosen game")
                     raise ValueError("Error: Game Chosen is not Implemented")
                 views[iterator+1] = lookup.lookup_game_view(views[1].game_choice, game_choices, players)
-            if iterator == 2:
-                print("got to iterator 2")
+            elif iterator == 2:
                 running_game_view = RunningGame("| Game Started!", players, views[iterator].goal_list,
-                                                views[iterator].pattern_choice,  views[iterator].color)
+                                                views[iterator].pattern_choice,  views[iterator].color,
+                                                views[iterator-1].score_choice, views[iterator-1].mode_choice)
                 views[iterator+1] = running_game_view
-                print(f"{players}\n{views[iterator].goal_list}\n{views[iterator].pattern_choice}\n"
-                      f"{str(views[iterator].color)}")
             iterator += 1
 
         # await ctx.send(f"The choice picked was {views[1].game_choice} and {views[1].mode_choice} and score is

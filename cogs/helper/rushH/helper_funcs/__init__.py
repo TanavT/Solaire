@@ -23,20 +23,20 @@ def button_setup(button, name: str, num: int, players: list[str]):
             players[num - 1] = ""
 
 
-# used in check_end_early
-def calculate_players(players: list[str]):
-    num_players = 0
-    for player in players:
-        if player != "":
-            num_players += 1
-    return num_players
+# # used in check_end_early
+# def calculate_players(players: list[str]):
+#     num_players = 0
+#     for player in players:
+#         if player != "":
+#             num_players += 1
+#     return num_players
 
 
 # used in most views under ui.views
 def check_end_early(choices_made: list, current_user: str, players: list, players_ready: list) -> Tuple[bool, bool]:
     """returns true if either end condition is met, true in fst if not enough choices,
      true in snd if not enough players"""
-    player_count = calculate_players(players)
+    player_count = len(players)
     if False in choices_made:
         return True, True  # snd doesn't matter because will return before it checks snd
 

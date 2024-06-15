@@ -13,14 +13,14 @@ QUERY_URL = "http://localhost:3000/api/graphql"
 # output is list of goals found in goal_list, contains name, image, region, location, and difficulty
 class EldenRing(BaseView):
     def __init__(self, message: str, player: list):
-        super().__init__(message, player)
+        super().__init__(message, player, 300)
         self.__players_ready = []
         self.__region_choices = None
         self.pattern_choice = None
         self.__goal_choices = None
         self.goal_list = []
         self.__choices_made = NUM_CHOICES * [False]
-        self.color = discord.Color.dark_gold()
+        self.color = discord.Color.gold()
 
     @discord.ui.select(
         placeholder="Regions (Nothing Selected)",
@@ -110,19 +110,19 @@ class EldenRing(BaseView):
         options=[
             discord.SelectOption(
                 label="Progressive Choice",
-                description="Earlier/Easier Content at the beginning, Later/Harder content at the end"
+                description="Earlier/Easier Goals at the beginning, Later/Harder Goals at the end"
             ),
             discord.SelectOption(
                 label="Random Choice",
                 description="Pseudo-random (look it up) selection"
             ),
             discord.SelectOption(
-                label="Progressive Choice& Ramping",
-                description="Earlier/Easier Content at the beginning, Later/Harder content at the end"
+                label="Progressive Choice & Ramping",
+                description="Progressive Choice and Later Goals net more points"
             ),
             discord.SelectOption(
-                label="Random ",
-                description="Pseudo-random (look it up) selection"
+                label="Random Choice & Ramping",
+                description="Random Choice and Later Goals net more points"
             )
         ]
     )
@@ -159,7 +159,7 @@ class EldenRing(BaseView):
                                                 f"'{self.__goal_choices}'",
                                                 delete_after=3)
 
-    @discord.ui.button(label="Next", style=discord.ButtonStyle.primary, row=3)
+    @discord.ui.button(label="Next", custom_id="next_elden_ring", style=discord.ButtonStyle.primary, row=3)
     async def next_callback(self, button, interaction):
         current_user = str(interaction.user)
         end_conditions = helper.check_end_early(self.__choices_made, current_user, self.players, self.__players_ready)
@@ -195,11 +195,11 @@ class EldenRing(BaseView):
                     responses_list = json.loads(api_response.text[16:-3])
                     self.goal_list += responses_list
 
-            # print(self.goal_list)
-            # for index in range(len(self.goal_list)):
-            #     print(self.goal_list[index])
-
             # ending view
-            self.disable_all_items()
-            await interaction.response.edit_message(view=self)
+            self.clear_items()
+            await interaction.response.edit_message(content=f"| Elden Ring Settings:\n"
+                                                            f"  Region(s) = {self.__region_choices}\n"
+                                                            f"  Goal Pattern = {self.pattern_choice}\n"
+                                                            f"  Goal(s) = {self.__goal_choices}",
+                                                    view=self)
             self.stop()

@@ -4,8 +4,8 @@ import cogs.helper.rushH.helper_funcs as helper
 
 class BaseView (discord.ui.View):
     # add timeout later
-    def __init__(self, message: str, players: list):
-        super().__init__()
+    def __init__(self, message: str, players: list, time_on=300):
+        super().__init__(timeout=time_on)
         self.__players_ready = []
         self.players = players
         self.message = message

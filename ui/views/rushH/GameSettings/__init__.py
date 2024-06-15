@@ -7,7 +7,7 @@ NUM_CHOICES = 3
 
 class GameSettings(BaseView):
     def __init__(self, message: str, player: list):
-        super().__init__(message, player)
+        super().__init__(message, player, 300)
         self.__players_ready = []
         self.game_choice = None
         self.mode_choice = None
@@ -19,6 +19,7 @@ class GameSettings(BaseView):
         min_values=1,
         max_values=1,
         row=0,
+        custom_id="game_select",
         options=[
             discord.SelectOption(
                 label="Elden Ring"
@@ -27,7 +28,7 @@ class GameSettings(BaseView):
                 label="Hollow Knight"
             ),
             discord.SelectOption(
-                label="Super Mario 64"
+                label="Super Mario Odyssey"
             )
         ]
     )
@@ -42,6 +43,7 @@ class GameSettings(BaseView):
         min_values=1,
         max_values=1,
         row=1,
+        custom_id="bounty_select",
         options=[
             discord.SelectOption(
                 label="Public Bounty",
@@ -68,6 +70,7 @@ class GameSettings(BaseView):
         min_values=1,
         max_values=1,
         row=2,
+        custom_id="score_select",
         options=[
             discord.SelectOption(
                 label="1"
@@ -89,7 +92,7 @@ class GameSettings(BaseView):
         await interaction.response.send_message(f"Player '{str(interaction.user)}' chose score: '{self.score_choice}'",
                                                 delete_after=3)
 
-    @discord.ui.button(label="Next", style=discord.ButtonStyle.primary, row=3)
+    @discord.ui.button(label="Next", custom_id="next_game_settings", style=discord.ButtonStyle.primary, row=3)
     async def next_callback(self, button, interaction):
         # since list gets changed as choices are made, there will be no starting 0 if all choices are made
         current_user = str(interaction.user)
@@ -107,8 +110,12 @@ class GameSettings(BaseView):
             return
 
         if 0 not in self.__choices_made:
-            self.disable_all_items()
-            await interaction.response.edit_message(view=self)
+            self.clear_items()
+            await interaction.response.edit_message(content=f"| Game Settings:\n"
+                                                            f"  Game = {self.game_choice}\n"
+                                                            f"  Game Mode = {self.mode_choice}\n"
+                                                            f"  Score to Win = {self.score_choice} points",
+                                                    view=self)
             self.stop()
         else:
             await interaction.response.send_message("Please select a choice from each section and try again",
