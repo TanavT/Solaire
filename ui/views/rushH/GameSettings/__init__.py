@@ -85,11 +85,17 @@ class GameSettings(BaseView):
             ),
             discord.SelectOption(
                 label="10"
+            ),
+            discord.SelectOption(
+                label="20"
+            ),
+            discord.SelectOption(
+                label="No Limit"
             )
         ]
     )
     async def score_choice_callback(self, select, interaction):
-        self.score_choice = int(select.values[0])
+        self.score_choice = select.values[0]
         self.__choices_made[2] = True
         await self.update_settings(interaction, self.game_choice, self.mode_choice, self.score_choice)
         # await interaction.response.send_message(f"Player '{str(interaction.user)}' "
@@ -118,7 +124,7 @@ class GameSettings(BaseView):
             await interaction.response.edit_message(content=f"| Game Settings:\n"
                                                             f"  Game = {self.game_choice}\n"
                                                             f"  Game Mode = {self.mode_choice}\n"
-                                                            f"  Score to Win = {self.score_choice} points",
+                                                            f"  Score to Win = {self.score_choice}",
                                                     view=self)
             self.stop()
         else:

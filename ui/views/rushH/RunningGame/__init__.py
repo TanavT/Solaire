@@ -12,8 +12,12 @@ class RunningGame(BaseView):
         self.color = color
         self.pattern = pattern_choice
         self.__possible_goals = []
-        self.max_score = int(max_score)
         self.game_mode = game_mode
+        if max_score == "No Limit":
+            self.max_score = 99999999
+        else:
+            self.max_score = int(max_score)
+
         self.player_and_scores = []
         for player in players:
             self.player_and_scores += [[player, 0]]
@@ -21,15 +25,15 @@ class RunningGame(BaseView):
     def get_embed(self, goal_name: str, goal_region: str, goal_location: str, goal_url: str):
         embed = discord.Embed(
             title=f"Goal #{self.__goal_num}: {goal_name}",
-            description=self.pattern,
+            description=f"{goal_location}, {goal_region}",
             color=self.color  # Pycord provides a class with default colors you can choose from
         )
+        # embed.set_image(url=goal_url) # embed images take too long to pull
         for player in self.player_and_scores:
             embed.add_field(name="Player | Score", value=f"{player[0]} | {player[1]}", inline=False)
 
-        embed.set_footer(text=f"{goal_location}, {goal_region}")
+        embed.set_footer(text=self.pattern)
         embed.set_author(name="Solaire of Astora")
-        embed.set_image(url=goal_url)
         return embed
 
     async def game_end(self, interaction: discord.Interaction):
@@ -43,7 +47,7 @@ class RunningGame(BaseView):
         self.stop()
         # await interaction.response.send_message(f"{winner[0]} wins with {winner[1]} points!")
 
-    @discord.ui.button(label="get_next", custom_id="next_running_game",  style=discord.ButtonStyle.secondary, row=3)
+    @discord.ui.button(label="Start!", custom_id="next_running_game",  style=discord.ButtonStyle.secondary, row=3)
     async def get_next(self, button, interaction):
         if self.__goal_num != 0:
             scoring_player = str(interaction.user)
@@ -58,11 +62,13 @@ class RunningGame(BaseView):
                 return
 
         if self.__goal_num == 0:
-            self.__possible_goals = list(range(0, len(self.goal_list) - 1))
+            self.__possible_goals = list(range(0, len(self.goal_list)))
+            button.label = "Finished!"
         self.__goal_num += 1
-        new_goal = self.__possible_goals[random.randint(0, len(self.__possible_goals) - 1)]
+        new_goal = self.__possible_goals[random.randint(0, len(self.__possible_goals)-1)]
         self.__possible_goals.remove(new_goal)
 
         new_embed = self.get_embed(self.goal_list[new_goal]["name"], self.goal_list[new_goal]["region"],
                                    self.goal_list[new_goal]["location"], self.goal_list[new_goal]["image"])
-        await interaction.response.edit_message(embed=new_embed, view=self)
+
+        await interaction.response.edit_message(view=self, embed=new_embed)
