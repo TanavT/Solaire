@@ -1,22 +1,36 @@
 import discord
 from ui.views.BaseView import BaseView
 import random
+# from discord.ui import Button
+import math
 
 
 class RunningGame(BaseView):
     def __init__(self, message_str: str, players: list, goal_list: list, pattern_choice: str,
-                 color: discord.Color, max_score: str, game_mode: str):
+                 color: discord.Color, max_score: str, game_mode: str, goal_choices: list):
         super().__init__(message_str, players, None)
         self.goal_list = goal_list
         self.__goal_num = 0
         self.color = color
-        self.pattern = pattern_choice
+        self.__point_amount = 1
         self.__possible_goals = []
+        self.__goal_choices = goal_choices
         self.game_mode = game_mode
         if max_score == "No Limit":
-            self.max_score = 99999999
+            self.max_score = math.inf
         else:
             self.max_score = int(max_score)
+
+        self.ramping = False
+        self.pattern = pattern_choice.split(" & ")
+        if len(self.pattern) > 1 and self.pattern[1] == "Ramping":
+            self.ramping = True
+        if self.pattern[0] == "Progressive Choice":
+            self.pattern = 1
+        elif self.pattern[0] == "Random Choice":
+            self.pattern = 0
+        else:
+            raise ValueError("Unknown pattern choice")
 
         self.player_and_scores = []
         for player in players:
@@ -32,7 +46,8 @@ class RunningGame(BaseView):
         for player in self.player_and_scores:
             embed.add_field(name="Player | Score", value=f"{player[0]} | {player[1]}", inline=False)
 
-        embed.set_footer(text=self.pattern)
+        embed.set_footer(text=f"{self.pattern} | Score to Win = {self.max_score} | This Goal's points ="
+                              f" {self.__point_amount}")
         embed.set_author(name="Solaire of Astora")
         return embed
 
@@ -42,21 +57,30 @@ class RunningGame(BaseView):
             if player[1] > winner[1]:
                 winner = player
         self.clear_items()
-        await interaction.response.edit_message(content=f"| {winner[0].upper()} wins with {winner[1]} points!", embed=None,
-                                                view=self)
+        await interaction.response.edit_message(content=f"| {winner[0].upper()} wins with {winner[1]} points!",
+                                                embed=None, view=self)
         self.stop()
         # await interaction.response.send_message(f"{winner[0]} wins with {winner[1]} points!")
 
-    @discord.ui.button(label="Start!", custom_id="next_running_game",  style=discord.ButtonStyle.secondary, row=3)
-    async def get_next(self, button, interaction):
+    # Skip Button
+    async def skip_callback(self, interaction):
+        await self.get_next(None, interaction, False)
+
+    # Next Button
+    @discord.ui.button(label="Start!", custom_id="running_game",  style=discord.ButtonStyle.primary, row=3)
+    async def next_callback(self, button, interaction):
+        await self.get_next(button, interaction, True)
+
+    async def get_next(self, button, interaction, award_point: bool):
         if self.__goal_num != 0:
             scoring_player = str(interaction.user)
-            for player in self.player_and_scores:
-                if player[0] == scoring_player:
-                    player[1] += 1
-                    if player[1] == self.max_score:
-                        await self.game_end(interaction)
-                        return
+            if award_point:
+                for player in self.player_and_scores:
+                    if player[0] == scoring_player:
+                        player[1] += self.__point_amount
+                        if player[1] >= self.max_score:
+                            await self.game_end(interaction)
+                            return
             if self.__goal_num == len(self.goal_list):
                 await self.game_end(interaction)
                 return
@@ -64,11 +88,28 @@ class RunningGame(BaseView):
         if self.__goal_num == 0:
             self.__possible_goals = list(range(0, len(self.goal_list)))
             button.label = "Finished!"
-        self.__goal_num += 1
-        new_goal = self.__possible_goals[random.randint(0, len(self.__possible_goals)-1)]
-        self.__possible_goals.remove(new_goal)
+            # skip_button = discord.ui.button(label="Skip", custom_id="skip_button",
+            #                                 style=discord.ButtonStyle.secondary, row=3)
+            # skip_button.callback = skip_button
+            # self.add_item(skip_button)
+
+        new_goal = self.get_next_goal()
 
         new_embed = self.get_embed(self.goal_list[new_goal]["name"], self.goal_list[new_goal]["region"],
                                    self.goal_list[new_goal]["location"], self.goal_list[new_goal]["image"])
 
         await interaction.response.edit_message(view=self, embed=new_embed)
+
+    def get_next_goal(self) -> str:
+        self.__goal_num += 1
+        if self.ramping:
+            self.__point_amount = int(self.__goal_num / 3) + 1
+
+        new_goal = None
+        if self.pattern == 0:
+            new_goal = self.__possible_goals[random.randint(0, len(self.__possible_goals) - 1)]
+        if self.pattern == 1:
+            raise NotImplementedError
+            
+        self.__possible_goals.remove(new_goal)
+        return new_goal

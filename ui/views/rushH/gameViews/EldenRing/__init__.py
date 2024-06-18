@@ -17,7 +17,7 @@ class EldenRing(BaseView):
         self.__players_ready = []
         self.__region_choices = None
         self.pattern_choice = None
-        self.__goal_choices = None
+        self.goal_choices = None
         self.goal_list = []
         self.__choices_made = NUM_CHOICES * [False]
         self.color = discord.Color.gold()
@@ -98,7 +98,7 @@ class EldenRing(BaseView):
         self.__region_choices = []
         for region in select.values:
             self.__region_choices += [region]
-        await self.update_settings(interaction, self.__region_choices, self.pattern_choice, self.__goal_choices)
+        await self.update_settings(interaction, self.__region_choices, self.pattern_choice, self.goal_choices)
         # await interaction.response.edit(f"Player '{str(interaction.user)}' chose region: "
         #                                         f"'{self.__region_choices}'",
         #                                         delete_after=3)
@@ -130,7 +130,7 @@ class EldenRing(BaseView):
     async def pattern_choice_callback(self, select, interaction):
         self.__choices_made[1] = True
         self.pattern_choice = select.values[0]
-        await self.update_settings(interaction, self.__region_choices, self.pattern_choice, self.__goal_choices)
+        await self.update_settings(interaction, self.__region_choices, self.pattern_choice, self.goal_choices)
         # await interaction.response.send_message(f"Player '{str(interaction.user)}' chose pattern: "
         #                                         f"'{self.pattern_choice}'",
         #                                         delete_after=3)
@@ -148,18 +148,18 @@ class EldenRing(BaseView):
                 label="Weapon",
             ),
             discord.SelectOption(
-                label="Spell/Incantation/AoW",
+                label="Misc",
             )
         ]
     )
     async def goal_choice_callback(self, select, interaction):
         self.__choices_made[2] = True
-        self.__goal_choices = []
+        self.goal_choices = []
         for goal in select.values:
-            self.__goal_choices += [goal.lower()]
-        await self.update_settings(interaction, self.__region_choices, self.pattern_choice, self.__goal_choices)
+            self.goal_choices += [goal.lower()]
+        await self.update_settings(interaction, self.__region_choices, self.pattern_choice, self.goal_choices)
         # await interaction.response.send_message(f"Player '{str(interaction.user)}' chose goals: "
-        #                                         f"'{self.__goal_choices}'",
+        #                                         f"'{self.goal_choices}'",
         #                                         delete_after=3)
 
     @discord.ui.button(label="Next", custom_id="next_elden_ring", style=discord.ButtonStyle.primary, row=3)
@@ -179,7 +179,7 @@ class EldenRing(BaseView):
             return
 
         # needs to be nested loops when implementing choices other than bosses, will do later
-        for goal in self.__goal_choices:
+        for goal in self.goal_choices:
             for region in self.__region_choices:
                 query_request = f"""
                         query {{
@@ -203,6 +203,6 @@ class EldenRing(BaseView):
             await interaction.response.edit_message(content=f"| Elden Ring Settings:\n"
                                                             f"  Region(s) = {self.__region_choices}\n"
                                                             f"  Goal Pattern = {self.pattern_choice}\n"
-                                                            f"  Goal(s) = {self.__goal_choices}",
+                                                            f"  Goal(s) = {self.goal_choices}",
                                                     view=self)
             self.stop()

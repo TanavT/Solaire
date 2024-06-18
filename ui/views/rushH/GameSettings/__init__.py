@@ -90,6 +90,18 @@ class GameSettings(BaseView):
                 label="20"
             ),
             discord.SelectOption(
+                label="35"
+            ),
+            discord.SelectOption(
+                label="50"
+            ),
+            discord.SelectOption(
+                label="75"
+            ),
+            discord.SelectOption(
+                label="100"
+            ),
+            discord.SelectOption(
                 label="No Limit"
             )
         ]

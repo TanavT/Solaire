@@ -27,7 +27,8 @@ class RushMain(commands.Cog):
         # variables
         players = MAX_SLOTS * [""]
 
-        views = [PlayerJoin("| Waiting for Players...", players), GameSettings("| Game Settings...", players),
+        views = [PlayerJoin("| Waiting for Players...", players),
+                 GameSettings("| Game Settings... (Only Elden Ring is currently implemented)", players),
                  None, None]
 
         await ctx.respond("| Starting Rush Mini-Game!")
@@ -52,8 +53,9 @@ class RushMain(commands.Cog):
                 running_game_view = RunningGame("| Game Started! Click 'Start!' to start the game and click "
                                                 "'Finished!' when you completed a goal",
                                                 players, views[iterator].goal_list,
-                                                views[iterator].pattern_choice,  views[iterator].color,
-                                                views[iterator-1].score_choice, views[iterator-1].mode_choice)
+                                                views[iterator].pattern_choice, views[iterator].color,
+                                                views[iterator-1].score_choice, views[iterator-1].mode_choice,
+                                                views[iterator].goal_choices)
                 views[iterator+1] = running_game_view
             iterator += 1
 
