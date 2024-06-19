@@ -3,7 +3,6 @@ from discord.ext import commands
 from ui.views.rushH.GameSettings import GameSettings
 from ui.views.rushH.PlayerJoin import PlayerJoin
 from ui.views.rushH.RunningGame import RunningGame
-
 import cogs.helper.rushH.lookup_game as lookup
 
 

@@ -15,7 +15,17 @@ class RunningGame(BaseView):
         self.__point_amount = 1
         self.__possible_goals = []
         self.__goal_choices = goal_choices
-        self.game_mode = game_mode
+
+        self.__game_mode = None
+        if game_mode == "Public Bounties":
+            self.__game_mode = 0
+        elif game_mode == "Private Bounty List":
+            self.__game_mode = 1
+        elif game_mode == "Hybrid Bounties":
+            self.__game_mode = 2
+        else:
+            raise ValueError("Unknown Bounty Choice")
+
         if max_score == "No Limit":
             self.max_score = math.inf
         else:
@@ -36,40 +46,14 @@ class RunningGame(BaseView):
         for player in players:
             self.player_and_scores += [[player, 0]]
 
-    def get_embed(self, goal_name: str, goal_region: str, goal_location: str, goal_url: str):
-        embed = discord.Embed(
-            title=f"Goal #{self.__goal_num}: {goal_name}",
-            description=f"{goal_location}, {goal_region}",
-            color=self.color  # Pycord provides a class with default colors you can choose from
-        )
-        # embed.set_image(url=goal_url) # embed images take too long to pull
-        for player in self.player_and_scores:
-            embed.add_field(name="Player | Score", value=f"{player[0]} | {player[1]}", inline=False)
-
-        embed.set_footer(text=f"{self.pattern} | Score to Win = {self.max_score} | This Goal's points ="
-                              f" {self.__point_amount}")
-        embed.set_author(name="Solaire of Astora")
-        return embed
-
-    async def game_end(self, interaction: discord.Interaction):
-        winner = self.player_and_scores[0]
-        for player in self.player_and_scores:
-            if player[1] > winner[1]:
-                winner = player
-        self.clear_items()
-        await interaction.response.edit_message(content=f"| {winner[0].upper()} wins with {winner[1]} points!",
-                                                embed=None, view=self)
-        self.stop()
-        # await interaction.response.send_message(f"{winner[0]} wins with {winner[1]} points!")
-
-    # Skip Button
-    async def skip_callback(self, interaction):
-        await self.get_next(None, interaction, False)
-
     # Next Button
     @discord.ui.button(label="Start!", custom_id="running_game",  style=discord.ButtonStyle.primary, row=3)
     async def next_callback(self, button, interaction):
         await self.get_next(button, interaction, True)
+
+    # Skip Button
+    async def skip_callback(self, interaction):
+        await self.get_next(None, interaction, False)
 
     async def get_next(self, button, interaction, award_point: bool):
         if self.__goal_num != 0:
@@ -110,6 +94,32 @@ class RunningGame(BaseView):
             new_goal = self.__possible_goals[random.randint(0, len(self.__possible_goals) - 1)]
         if self.pattern == 1:
             raise NotImplementedError
-            
+
         self.__possible_goals.remove(new_goal)
         return new_goal
+
+    def get_embed(self, goal_name: str, goal_region: str, goal_location: str, goal_url: str):
+        embed = discord.Embed(
+            title=f"Goal #{self.__goal_num}:\n{goal_name}",
+            description=f"{goal_location}, {goal_region}",
+            color=self.color  # Pycord provides a class with default colors you can choose from
+        )
+        # embed.set_image(url=goal_url) # embed images take too long to pull
+        for player in self.player_and_scores:
+            embed.add_field(name="Player | Score", value=f"{player[0]} | {player[1]}", inline=False)
+
+        embed.set_footer(text=f"{self.pattern} | Score to Win = {self.max_score} | This Goal's points ="
+                              f" {self.__point_amount}")
+        embed.set_author(name="Solaire of Astora")
+        return embed
+
+    async def game_end(self, interaction: discord.Interaction):
+        winner = self.player_and_scores[0]
+        for player in self.player_and_scores:
+            if player[1] > winner[1]:
+                winner = player
+        self.clear_items()
+        await interaction.response.edit_message(content=f"| {winner[0].upper()} wins with {winner[1]} points!",
+                                                embed=None, view=self)
+        self.stop()
+        # await interaction.response.send_message(f"{winner[0]} wins with {winner[1]} points!")

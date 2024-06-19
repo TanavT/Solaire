@@ -57,8 +57,9 @@ class PlayerJoinView(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Start Game", style=discord.ButtonStyle.primary, row=1)
-    async def start_game_callback(self, interaction):
+    async def start_game_callback(self, button, interaction):
         self.disable_all_items()
+        await interaction.user.send(content='Greetings!', view=PlayerJoinView())
         await interaction.response.edit_message(view=self)
 
 
@@ -144,7 +145,10 @@ class TestingSpaceClass(commands.Cog):
 #     @discord.ui.button(label="Incrementor", style=discord.ButtonStyle.secondary, row=0)
 #     async def embed_test(self, button: discord.ui.Button, interaction: discord.Interaction):
 #         await interaction.response.defer()
-
+    @discord.slash_command()
+    async def greetings_private(self, ctx):
+        await ctx.author.send('Greetings!')
 
 def setup(bot):
     bot.add_cog(TestingSpaceClass(bot))
+

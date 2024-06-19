@@ -3,6 +3,7 @@ from ui.views.BaseView import BaseView
 import json
 import requests
 import cogs.helper.rushH.helper_funcs as helper
+import random
 
 NUMBER_OF_REGIONS = 21
 NUM_CHOICES = 3
@@ -162,6 +163,35 @@ class EldenRing(BaseView):
         #                                         f"'{self.goal_choices}'",
         #                                         delete_after=3)
 
+    def randomize_while_sorted(self):
+        start_index = None
+        for index in range(0, len(self.goal_list)):
+            if index == 0:
+                start_index = [0, self.goal_list[index]["difficulty"]]
+                continue
+
+            if self.goal_list[index]["difficulty"] == start_index[1]:
+                if index != len(self.goal_list) - 1:
+                    continue
+                else:
+                    index += 1
+
+            # It is confirmed now that the number is different or the end of the list
+            before_list = self.goal_list[:start_index[0]]
+
+            after_list = []
+            if index != len(self.goal_list):
+                after_list = self.goal_list[index:]
+
+            list_to_shuffle = self.goal_list[start_index[0]: index]
+
+            random.shuffle(list_to_shuffle)
+
+            self.goal_list = before_list + list_to_shuffle + after_list
+
+            if index != len(self.goal_list):
+                start_index = [index, self.goal_list[index]["difficulty"]]
+
     @discord.ui.button(label="Next", custom_id="next_elden_ring", style=discord.ButtonStyle.primary, row=3)
     async def next_callback(self, button, interaction):
         current_user = str(interaction.user)
@@ -198,11 +228,19 @@ class EldenRing(BaseView):
                     responses_list = json.loads(api_response.text[16:-3])
                     self.goal_list += responses_list
 
-            # ending view
-            self.clear_items()
-            await interaction.response.edit_message(content=f"| Elden Ring Settings:\n"
-                                                            f"  Region(s) = {self.__region_choices}\n"
-                                                            f"  Goal Pattern = {self.pattern_choice}\n"
-                                                            f"  Goal(s) = {self.goal_choices}",
-                                                    view=self)
-            self.stop()
+        # sorting goal_list and randomizing within difficulty groups
+        self.goal_list = sorted(self.goal_list, key=lambda list_to_sort: list_to_sort["difficulty"])
+        self.randomize_while_sorted()
+        # self.print_list()
+        # ending view
+        self.clear_items()
+        await interaction.response.edit_message(content=f"| Elden Ring Settings:\n"
+                                                        f"  Region(s) = {self.__region_choices}\n"
+                                                        f"  Goal Pattern = {self.pattern_choice}\n"
+                                                        f"  Goal(s) = {self.goal_choices}",
+                                                        view=self)
+        self.stop()
+
+    def print_list(self):
+        for element in self.goal_list:
+            print(element)
