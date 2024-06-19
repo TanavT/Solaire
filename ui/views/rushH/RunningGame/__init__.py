@@ -28,17 +28,21 @@ class RunningGame(BaseView):
 
         if max_score == "No Limit":
             self.max_score = math.inf
+            self.goals_percent_reciprocal = 1.0
         else:
             self.max_score = int(max_score)
+            self.goals_percent_reciprocal = len(self.goal_list) / ((self.max_score - 1) * len(players) + 1)
+            if self.goals_percent_reciprocal < 1.0:
+                self.goals_percent_reciprocal = 1.0
 
         self.ramping = False
         self.pattern = pattern_choice.split(" & ")
         if len(self.pattern) > 1 and self.pattern[1] == "Ramping":
             self.ramping = True
-        if self.pattern[0] == "Progressive Choice":
-            self.pattern = 1
-        elif self.pattern[0] == "Random Choice":
+        if self.pattern[0] == "Random Choice":
             self.pattern = 0
+        elif self.pattern[0] == "Progressive Choice":
+            self.pattern = 1
         else:
             raise ValueError("Unknown pattern choice")
 
@@ -85,7 +89,6 @@ class RunningGame(BaseView):
         await interaction.response.edit_message(view=self, embed=new_embed)
 
     def get_next_goal(self) -> str:
-        self.__goal_num += 1
         if self.ramping:
             self.__point_amount = int(self.__goal_num / 3) + 1
 
@@ -93,9 +96,17 @@ class RunningGame(BaseView):
         if self.pattern == 0:
             new_goal = self.__possible_goals[random.randint(0, len(self.__possible_goals) - 1)]
         if self.pattern == 1:
-            raise NotImplementedError
+            if self.max_score == math.inf:
+                new_goal = self.__possible_goals[0]
+            else:
+                # subtraction accounting for value being removed from list in every case except first
+                new_goal_start_index = int(self.__goal_num * self.goals_percent_reciprocal - self.__goal_num)
+                new_goal_end_index = int(((self.__goal_num + 1) * self.goals_percent_reciprocal) - (self.__goal_num + 1))
+
+                new_goal = self.__possible_goals[random.randint(new_goal_start_index, new_goal_end_index)]
 
         self.__possible_goals.remove(new_goal)
+        self.__goal_num += 1
         return new_goal
 
     def get_embed(self, goal_name: str, goal_region: str, goal_location: str, goal_url: str):

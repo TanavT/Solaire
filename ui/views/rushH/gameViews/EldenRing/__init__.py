@@ -118,10 +118,10 @@ class EldenRing(BaseView):
                 label="Random Choice",
                 description="Pseudo-random (look it up) selection"
             ),
-            discord.SelectOption(
-                label="Progressive Choice & Ramping",
-                description="Progressive Choice and Later Goals net more points"
-            ),
+            # discord.SelectOption(
+            #     label="Progressive Choice & Ramping",
+            #     description="Progressive Choice and Later Goals net more points"
+            # ),
             discord.SelectOption(
                 label="Random Choice & Ramping",
                 description="Random Choice and Later Goals net more points"
