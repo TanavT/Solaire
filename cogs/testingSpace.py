@@ -5,6 +5,7 @@ import json
 from discord.ext.pages import Paginator, Page
 import discord.ui.view
 from ui.views.rushH.PlayerJoin import PlayerJoin
+import time
 
 # need to get a better database, problem is that there is no others I can find
 # This database is not consistent with locations and regions, I will try to fix later ig
@@ -61,6 +62,21 @@ class PlayerJoinView(discord.ui.View):
         self.disable_all_items()
         await interaction.user.send(content='Greetings!', view=PlayerJoinView())
         await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="Start Timer", style=discord.ButtonStyle.primary, row=4)
+    async def start_timer_callback(self, button, interaction):
+        start_time = time.time()
+        current_time = time.time()
+        interaction.response.defer()
+        while current_time - start_time < 3:
+            current_time = time.time()
+            embed = discord.Embed(
+                title="Timer",
+                description=f'Time: {current_time - start_time}',
+                color=discord.Colour.blurple(),  # Pycord provides a class with default colors you can choose from
+            )
+            await interaction.followup.edit(view=self, embed=embed)
+
 
 
 class TestingSpaceClass(commands.Cog):
@@ -148,6 +164,14 @@ class TestingSpaceClass(commands.Cog):
     @discord.slash_command()
     async def greetings_private(self, ctx):
         await ctx.author.send('Greetings!')
+
+    @discord.slash_command()
+    async def timer(self, ctx):
+        start_time = time.time()
+        current_time = time.time()
+        while current_time - start_time < 3:
+            current_time = time.time()
+            await ctx.respond(f'Time: {current_time - start_time}')
 
 def setup(bot):
     bot.add_cog(TestingSpaceClass(bot))

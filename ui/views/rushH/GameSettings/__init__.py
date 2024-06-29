@@ -2,7 +2,7 @@ import discord
 from ui.views.BaseView import BaseView
 import cogs.helper.rushH.helper_funcs as helper
 
-NUM_CHOICES = 3
+NUM_CHOICES = 4
 
 
 class GameSettings(BaseView):
@@ -12,6 +12,7 @@ class GameSettings(BaseView):
         self.game_choice = None
         self.mode_choice = None
         self.score_choice = None
+        self.setup_choice = None
         self.__choices_made = NUM_CHOICES * [False]
 
     @discord.ui.select(
@@ -35,7 +36,8 @@ class GameSettings(BaseView):
     async def game_choice_callback(self, select, interaction):
         self.game_choice = select.values[0]
         self.__choices_made[0] = True
-        await self.update_settings(interaction, self.game_choice, self.mode_choice, self.score_choice)
+        await self.update_settings(interaction, self.game_choice, self.mode_choice,
+                                   self.score_choice, self.setup_choice)
         # await interaction.response.send_message(f"Player '{str(interaction.user)}' chose game: '{self.game_choice}'",
         #                                         delete_after=3)
 
@@ -63,7 +65,8 @@ class GameSettings(BaseView):
     async def mode_choice_callback(self, select, interaction):
         self.mode_choice = select.values[0]
         self.__choices_made[1] = True
-        await self.update_settings(interaction, self.game_choice, self.mode_choice, self.score_choice)
+        await self.update_settings(interaction, self.game_choice, self.mode_choice,
+                                   self.score_choice, self.setup_choice)
         # await interaction.response.send_message(f"Player '{str(interaction.user)}' chose mode: '{self.mode_choice}'",
         #                                         delete_after=3)
 
@@ -109,12 +112,64 @@ class GameSettings(BaseView):
     async def score_choice_callback(self, select, interaction):
         self.score_choice = select.values[0]
         self.__choices_made[2] = True
-        await self.update_settings(interaction, self.game_choice, self.mode_choice, self.score_choice)
+        await self.update_settings(interaction, self.game_choice, self.mode_choice,
+                                   self.score_choice, self.setup_choice)
         # await interaction.response.send_message(f"Player '{str(interaction.user)}' "
         #                                         f"chose score: '{self.score_choice}'",
         #                                         delete_after=3)
 
-    @discord.ui.button(label="Next", custom_id="next_game_settings", style=discord.ButtonStyle.primary, row=3)
+    @discord.ui.select(
+        placeholder="Setup Period",
+        min_values=1,
+        max_values=1,
+        row=3,
+        custom_id="setup_period_select",
+        options=[
+            discord.SelectOption(
+                label="None",
+                description="Goals are displayed at game start"
+            ),
+            discord.SelectOption(
+                label="1 Minute",
+                description="Goals are displayed 1 minute after game start"
+            ),
+            discord.SelectOption(
+                label="5 Minutes",
+                description="Goals are displayed 5 minutes after game start"
+            ),
+            discord.SelectOption(
+                label="10 Minutes",
+                description="Goals are displayed 10 minutes after game start"
+            ),
+            discord.SelectOption(
+                label="15 Minutes",
+                description="Goals are displayed 15 minutes after game start"
+            ),
+            discord.SelectOption(
+                label="20 Minute",
+                description="Goals are displayed 20 minutes after game start"
+            ),
+            discord.SelectOption(
+                label="30 Minutes",
+                description="Goals are displayed 30 minutes after game start"
+            ),
+            discord.SelectOption(
+                label="45 Minutes",
+                description="Goals are displayed 45 minutes after game start"
+            ),
+            discord.SelectOption(
+                label="1 Hour",
+                description="Goals are displayed 1 hour after game start"
+            )
+        ]
+    )
+    async def setup_choice_callback(self, select, interaction):
+        self.setup_choice = select.values[0]
+        self.__choices_made[3] = True
+        await self.update_settings(interaction, self.game_choice, self.mode_choice,
+                                   self.score_choice, self.setup_choice)
+
+    @discord.ui.button(label="Next", custom_id="next_game_settings", style=discord.ButtonStyle.primary, row=4)
     async def next_callback(self, button, interaction):
         # since list gets changed as choices are made, there will be no starting 0 if all choices are made
         current_user = str(interaction.user)
