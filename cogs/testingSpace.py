@@ -7,8 +7,11 @@ import discord.ui.view
 from ui.views.rushH.PlayerJoin import PlayerJoin
 import time
 
-# need to get a better database, problem is that there is no others I can find
-# This database is not consistent with locations and regions, I will try to fix later ig
+embed_test = discord.Embed(
+            title="My Amazing Embed",
+            description="Embeds are super easy, barely an inconvenience.",
+            color=discord.Colour.blurple(),  # Pycord provides a class with default colors you can choose from
+        )
 
 
 class PlayerJoinView(discord.ui.View):
@@ -18,6 +21,7 @@ class PlayerJoinView(discord.ui.View):
         self.num = 0
         self.timer_started = False
         self.start_time = 0
+        self.times_button_pressed = 0
 
     @discord.ui.button(label="Slot 1", style=discord.ButtonStyle.secondary, row=0)
     async def slot1_callback(self, button, interaction):
@@ -61,13 +65,17 @@ class PlayerJoinView(discord.ui.View):
 
     @discord.ui.button(label="Start Game", style=discord.ButtonStyle.primary, row=1)
     async def start_game_callback(self, button, interaction):
-        self.disable_all_items()
-        await interaction.user.send(content='Greetings!', view=PlayerJoinView())
+        # self.disable_all_items()
+        await interaction.user.send(content='Greetings!', embed=embed_test, view=PlayerButtonView(self))
         await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="Check Times Pressed", style=discord.ButtonStyle.primary, row=1)
+    async def check_presses_callback(self, button, interaction):
+        await interaction.response.send_message(f"Time Button Pressed: {self.times_button_pressed}")
 
     @discord.ui.button(label="Start Timer", style=discord.ButtonStyle.primary, row=4)
     async def start_timer_callback(self, button, interaction):
-        timer_length = 60
+        timer_length = 3
         if not self.timer_started:
             self.start_time = time.time()
             self.timer_started = True
@@ -83,10 +91,21 @@ class PlayerJoinView(discord.ui.View):
             await interaction.response.edit_message(view=self)
 
 
+class PlayerButtonView(discord.ui.View):
+
+    def __init__(self, parent_view: PlayerJoinView):
+        super().__init__()
+        self.__parent_view = parent_view
+
+    @discord.ui.button(label="Press Me", style=discord.ButtonStyle.secondary, row=0)
+    async def button_callback(self, button, interaction):
+        await interaction.response.send_message("Button Pressed")
+        self.__parent_view.times_button_pressed += 1
+
+
+# need to get a better database, problem is that there is no others I can find
+# This database is not consistent with locations and regions, I will try to fix later ig
 def convert_seconds_to_clock(time_to_convert):
-    hours = 0
-    minutes = 0
-    seconds = 0
     clock_string = ""
 
     hours = int(time_to_convert/3600)
@@ -168,7 +187,7 @@ class TestingSpaceClass(commands.Cog):
         embed.set_image(url="https://eldenring.wiki.fextralife.com/file/Elden-Ring/"
                             "elden_ring_artwork_elden_ring_wiki_guide_7_300px.jpg")
 
-        await ctx.respond("Hello! Here's a cool embed.", embed=embed, view=PlayerJoin("| Waiting for Players...",[]))  # Send the embed with some text
+        await ctx.respond("Hello! Here's a cool embed.", embed=embed, view=PlayerJoin("| Waiting for Players...", []))  # Send the embed with some text
 
 # class TestingEmbedView(discord.ui.View):
 #     def __init__(self, ctx):
@@ -200,6 +219,6 @@ class TestingSpaceClass(commands.Cog):
             current_time = time.time()
             await ctx.respond(f'Time: {current_time - start_time}')
 
+
 def setup(bot):
     bot.add_cog(TestingSpaceClass(bot))
-
