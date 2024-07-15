@@ -16,6 +16,8 @@ class PlayerJoinView(discord.ui.View):
     def __init__(self):
         super().__init__()
         self.num = 0
+        self.timer_started = False
+        self.start_time = 0
 
     @discord.ui.button(label="Slot 1", style=discord.ButtonStyle.secondary, row=0)
     async def slot1_callback(self, button, interaction):
@@ -65,18 +67,43 @@ class PlayerJoinView(discord.ui.View):
 
     @discord.ui.button(label="Start Timer", style=discord.ButtonStyle.primary, row=4)
     async def start_timer_callback(self, button, interaction):
-        start_time = time.time()
-        current_time = time.time()
-        interaction.response.defer()
-        while current_time - start_time < 3:
-            current_time = time.time()
-            embed = discord.Embed(
-                title="Timer",
-                description=f'Time: {current_time - start_time}',
-                color=discord.Colour.blurple(),  # Pycord provides a class with default colors you can choose from
-            )
-            await interaction.followup.edit(view=self, embed=embed)
+        timer_length = 60
+        if not self.timer_started:
+            self.start_time = time.time()
+            self.timer_started = True
 
+        current_time = time.time()
+        if current_time - self.start_time >= timer_length:
+            self.disable_all_items()
+            await interaction.response.send_message("Timer Elapsed")
+            button.label = "Time Remaining : 00:00"
+            self.stop()
+        else:
+            button.label = f"Time Remaining: {convert_seconds_to_clock(timer_length - (current_time - self.start_time))}"
+            await interaction.response.edit_message(view=self)
+
+
+def convert_seconds_to_clock(time_to_convert):
+    hours = 0
+    minutes = 0
+    seconds = 0
+    clock_string = ""
+
+    hours = int(time_to_convert/3600)
+    # multiplication instead of modulo for purpose of efficiency
+    minutes = int((time_to_convert - hours * 3600)/60)
+    seconds = int(time_to_convert - hours * 3600 - minutes * 60)
+
+    if hours > 0:
+        hours_str = str(hours).zfill(2)
+        clock_string += f"{hours_str}:"
+    minutes_str = str(minutes).zfill(2)
+    clock_string += f"{minutes_str}:"
+    seconds_str = f"{seconds:d}".zfill(2)
+    clock_string += f"{seconds_str}"
+
+    # print(f"{hours}, {minutes}, {seconds}")
+    return clock_string
 
 
 class TestingSpaceClass(commands.Cog):
