@@ -126,45 +126,45 @@ class GameSettings(BaseView):
         custom_id="setup_period_select",
         options=[
             discord.SelectOption(
-                label="None",
+                label="0:00",
                 description="Goals are displayed at game start"
             ),
             discord.SelectOption(
-                label="1 Minute",
+                label="1:00",
                 description="Goals are displayed 1 minute after game start"
             ),
             discord.SelectOption(
-                label="5 Minutes",
+                label="5:00",
                 description="Goals are displayed 5 minutes after game start"
             ),
             discord.SelectOption(
-                label="10 Minutes",
+                label="10:00",
                 description="Goals are displayed 10 minutes after game start"
             ),
             discord.SelectOption(
-                label="15 Minutes",
+                label="15:00",
                 description="Goals are displayed 15 minutes after game start"
             ),
             discord.SelectOption(
-                label="20 Minute",
+                label="20:00",
                 description="Goals are displayed 20 minutes after game start"
             ),
             discord.SelectOption(
-                label="30 Minutes",
+                label="30:00",
                 description="Goals are displayed 30 minutes after game start"
             ),
             discord.SelectOption(
-                label="45 Minutes",
+                label="45:00",
                 description="Goals are displayed 45 minutes after game start"
             ),
             discord.SelectOption(
-                label="1 Hour",
+                label="1:00:00",
                 description="Goals are displayed 1 hour after game start"
             )
         ]
     )
     async def setup_choice_callback(self, select, interaction):
-        self.setup_choice = select.values[0]
+        self.setup_choice = helper.convert_clock_to_seconds(select.values[0])
         self.__choices_made[3] = True
         await self.update_settings(interaction, self.game_choice, self.mode_choice,
                                    self.score_choice, self.setup_choice)
@@ -191,7 +191,8 @@ class GameSettings(BaseView):
             await interaction.response.edit_message(content=f"| Game Settings:\n"
                                                             f"  Game = {self.game_choice}\n"
                                                             f"  Game Mode = {self.mode_choice}\n"
-                                                            f"  Score to Win = {self.score_choice}",
+                                                            f"  Score to Win = {self.score_choice}\n"
+                                                            f"  Setup Period = {self.setup_choice}",
                                                     view=self)
             self.stop()
         else:

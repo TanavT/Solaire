@@ -54,7 +54,7 @@ class RushMain(commands.Cog):
                                                 players, views[iterator].goal_list,
                                                 views[iterator].pattern_choice, views[iterator].color,
                                                 views[iterator-1].score_choice, views[iterator-1].mode_choice,
-                                                views[iterator].goal_choices)
+                                                views[iterator].goal_choices, views[iterator-1].setup_choice)
                 views[iterator+1] = running_game_view
             iterator += 1
 
