@@ -38,13 +38,13 @@ class RunningGame(BaseView):
                 self.goals_percent_reciprocal = 1.0
 
         self.ramping = False
-        self.pattern = pattern_choice.split(" & ")
-        if len(self.pattern) > 1 and self.pattern[1] == "Ramping":
+        self.pattern_list = pattern_choice.split(" & ")
+        if len(self.pattern_list) > 1 and self.pattern_list[1] == "Ramping":
             self.ramping = True
-        if self.pattern[0] == "Random Choice":
-            self.pattern = 0
-        elif self.pattern[0] == "Progressive Choice":
-            self.pattern = 1
+        if self.pattern_list[0] == "Random Choice":
+            self.pattern_int = 0
+        elif self.pattern_list[0] == "Progressive Choice":
+            self.pattern_int = 1
         else:
             raise ValueError("Unknown pattern choice")
 
@@ -112,15 +112,16 @@ class RunningGame(BaseView):
             self.__point_amount = int(self.__goal_num / 3) + 1
 
         new_goal = None
-        if self.pattern == 0:
+        if self.pattern_int == 0:
             new_goal = self.__possible_goals[random.randint(0, len(self.__possible_goals) - 1)]
-        if self.pattern == 1:
+        if self.pattern_int == 1:
             if self.max_score == math.inf:
                 new_goal = self.__possible_goals[0]
             else:
                 # subtraction accounting for value being removed from list in every case except first
                 new_goal_start_index = int(self.__goal_num * self.goals_percent_reciprocal - self.__goal_num)
-                new_goal_end_index = int(((self.__goal_num + 1) * self.goals_percent_reciprocal) - (self.__goal_num + 1))
+                new_goal_end_index = int(((self.__goal_num + 1) * self.goals_percent_reciprocal) -
+                                         (self.__goal_num + 1))
 
                 new_goal = self.__possible_goals[random.randint(new_goal_start_index, new_goal_end_index)]
 
@@ -144,12 +145,23 @@ class RunningGame(BaseView):
         return embed
 
     async def game_end(self, interaction: discord.Interaction):
-        winner = self.player_and_scores[0]
-        for player in self.player_and_scores:
-            if player[1] > winner[1]:
-                winner = player
         self.clear_items()
-        await interaction.response.edit_message(content=f"| {winner[0].upper()} wins with {winner[1]} points!",
-                                                embed=None, view=self)
+        self.player_and_scores = sorted(self.player_and_scores, key=lambda list_to_sort: int(list_to_sort[1]),
+                                        reverse=True)
+        # winner = self.player_and_scores[0]
+        # for player in self.player_and_scores:
+        #     if player[1] > winner[1]:
+        #         winner = player
+        # await interaction.response.edit_message(content=f"| {winner[0].upper()} wins with {winner[1]} points!",
+        #                                         embed=None, view=self)
+
+        game_over_str = f"| Game Over! Final Scores:"
+
+        place_int = 1
+        for player in self.player_and_scores:
+            game_over_str += f"\n{place_int}. {player[0].upper()} | {player[1]} points"
+            place_int += 1
+
+        await interaction.response.edit_message(content=game_over_str, embed=None, view=self)
         self.stop()
         # await interaction.response.send_message(f"{winner[0]} wins with {winner[1]} points!")
