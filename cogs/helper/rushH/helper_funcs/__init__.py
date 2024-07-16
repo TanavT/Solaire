@@ -48,3 +48,40 @@ def check_end_early(choices_made: list, current_user: str, players: list, player
         return False, True
 
     return False, False
+
+
+# used in running games
+def convert_seconds_to_clock(time_to_convert):
+    clock_string = ""
+
+    hours = int(time_to_convert/3600)
+    # multiplication instead of modulo for purpose of efficiency
+    minutes = int((time_to_convert - hours * 3600)/60)
+    seconds = int(time_to_convert - hours * 3600 - minutes * 60)
+
+    if hours > 0:
+        hours_str = str(hours).zfill(2)
+        clock_string += f"{hours_str}:"
+    minutes_str = str(minutes).zfill(2)
+    clock_string += f"{minutes_str}:"
+    seconds_str = f"{seconds:d}".zfill(2)
+    clock_string += f"{seconds_str}"
+
+    # print(f"{hours}, {minutes}, {seconds}")
+    return clock_string
+
+
+def convert_clock_to_seconds(clock_to_convert):
+    times = clock_to_convert.split(":")
+
+    # multiplied by 60 everytime we move from seconds -> minutes -> hours
+    # does not work with days, unless we check to see if we are converting from hours -> days
+    current_power = 1
+    sum_time_in_seconds = 0
+
+    for index in range(len(times)-1, -1, -1):
+        sum_time_in_seconds += int(times[index]) * current_power
+        current_power *= 60
+
+    return sum_time_in_seconds
+

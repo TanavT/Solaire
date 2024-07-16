@@ -35,5 +35,10 @@ class BaseView (discord.ui.View):
         self.exit_triggered = True
         self.stop()
 
+    async def on_timeout(self):
+        self.disable_all_items()
+        self.exit_triggered = True
+        self.stop()
+
     # async def on_error(self, error, item, interaction):
     #     await interaction.response.send_message(f'Error: {str(error)}')

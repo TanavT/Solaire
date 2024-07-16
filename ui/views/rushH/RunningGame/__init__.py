@@ -3,11 +3,13 @@ from ui.views.BaseView import BaseView
 import random
 # from discord.ui import Button
 import math
+import time
+import cogs.helper.rushH.helper_funcs as helper
 
 
 class RunningGame(BaseView):
     def __init__(self, message_str: str, players: list, goal_list: list, pattern_choice: str,
-                 color: discord.Color, max_score: str, game_mode: str, goal_choices: list):
+                 color: discord.Color, max_score: str, game_mode: str, goal_choices: list, setup_choice: str):
         super().__init__(message_str, players, None)
         self.goal_list = goal_list
         self.__goal_num = 0
@@ -46,6 +48,10 @@ class RunningGame(BaseView):
         else:
             raise ValueError("Unknown pattern choice")
 
+        self.__setup_choice = setup_choice
+        self.__started_setup = False
+        self.__start_time = None
+
         self.player_and_scores = []
         for player in players:
             self.player_and_scores += [[player, 0]]
@@ -74,6 +80,19 @@ class RunningGame(BaseView):
                 return
 
         if self.__goal_num == 0:
+            if self.__setup_choice != 0:
+                if not self.__started_setup:
+                    self.__start_time = time.time()
+                    self.__started_setup = True
+
+                current_time = time.time()
+                if current_time - self.__start_time < self.__setup_choice:
+                    button.label = (f"Setup Time Remaining: {helper.convert_seconds_to_clock(
+                        self.__setup_choice - (current_time - self.__start_time))}"
+                                    f" (Click to Update)")
+                    await interaction.response.edit_message(view=self)
+                    return
+
             self.__possible_goals = list(range(0, len(self.goal_list)))
             button.label = "Finished!"
             # skip_button = discord.ui.button(label="Skip", custom_id="skip_button",

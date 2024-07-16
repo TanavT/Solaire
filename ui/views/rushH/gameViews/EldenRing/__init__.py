@@ -229,7 +229,7 @@ class EldenRing(BaseView):
                     self.goal_list += responses_list
 
         # sorting goal_list and randomizing within difficulty groups
-        self.goal_list = sorted(self.goal_list, key=lambda list_to_sort: list_to_sort["difficulty"])
+        self.goal_list = sorted(self.goal_list, key=lambda list_to_sort: int(list_to_sort["difficulty"]))
         self.randomize_while_sorted()
         # self.print_list()
         # ending view
