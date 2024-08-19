@@ -57,7 +57,7 @@ class RunningGame(BaseView):
             self.player_and_scores += [[player, 0]]
 
     # Next Button
-    @discord.ui.button(label="Start!", custom_id="running_game",  style=discord.ButtonStyle.primary, row=3)
+    @discord.ui.button(label="Start!", custom_id="running_game",  style=discord.ButtonStyle.primary, row=4)
     async def next_callback(self, button, interaction):
         await self.get_next(button, interaction, True)
 

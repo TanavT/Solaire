@@ -192,7 +192,7 @@ class EldenRing(BaseView):
             if index != len(self.goal_list):
                 start_index = [index, self.goal_list[index]["difficulty"]]
 
-    @discord.ui.button(label="Next", custom_id="next_elden_ring", style=discord.ButtonStyle.primary, row=3)
+    @discord.ui.button(label="Next", custom_id="next_elden_ring", style=discord.ButtonStyle.primary, row=4)
     async def next_callback(self, button, interaction):
         current_user = str(interaction.user)
         end_conditions = helper.check_end_early(self.__choices_made, current_user, self.players, self.__players_ready)

@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 import discord
 
-cogsList = ["testingSpace", "rush"]
+cogsList = ["testingSpace", "rush", "randomTeamGenerator"]
 # loading token
 load_dotenv()
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')

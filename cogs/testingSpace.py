@@ -5,9 +5,8 @@ import discord
 from discord.ext import commands
 import requests
 import json
-from discord.ext.pages import Paginator, Page
 import discord.ui.view
-from ui.views.rushH.PlayerJoin import PlayerJoin
+from ui.views.PlayerJoin import PlayerJoin
 import time
 
 embed_test = discord.Embed(
