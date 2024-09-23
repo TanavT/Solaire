@@ -1,5 +1,5 @@
 import discord
-import cogs.helper.rushH.helper_funcs as helper
+import cogs.helper.general.helper_funcs as helper
 
 
 class BaseView (discord.ui.View):

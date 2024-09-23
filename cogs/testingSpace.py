@@ -1,10 +1,12 @@
+# NOTE: This file is solely for testing new features in a contained space, none of the utilities defined in this file
+# are meant to be used in the normal operation of the bot
+
 import discord
 from discord.ext import commands
 import requests
 import json
-from discord.ext.pages import Paginator, Page
 import discord.ui.view
-from ui.views.rushH.PlayerJoin import PlayerJoin
+from ui.views.PlayerJoin import PlayerJoin
 import time
 
 embed_test = discord.Embed(

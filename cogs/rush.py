@@ -1,14 +1,14 @@
 import discord
 from discord.ext import commands
 from ui.views.rushH.GameSettings import GameSettings
-from ui.views.rushH.PlayerJoin import PlayerJoin
+from ui.views.PlayerJoin import PlayerJoin
 from ui.views.rushH.RunningGame import RunningGame
-import cogs.helper.rushH.lookup_game as lookup
+import cogs.helper.lookup_game as lookup
 
 
 views = None
 players = None
-MAX_SLOTS = 4
+MAX_SLOTS = 20
 game_choices = ["Elden Ring", "Hollow Knight", "Super Mario Odyssey"]
 
 
