@@ -87,8 +87,7 @@ class RunningGame(BaseView):
 
                 current_time = time.time()
                 if current_time - self.__start_time < self.__setup_choice:
-                    button.label = (f"Setup Time Remaining: {helper.convert_seconds_to_clock(
-                        self.__setup_choice - (current_time - self.__start_time))}"
+                    button.label = (f"Setup Time Remaining: {helper.convert_seconds_to_clock(self.__setup_choice - (current_time - self.__start_time))}"
                                     f" (Click to Update)")
                     await interaction.response.edit_message(view=self)
                     return
