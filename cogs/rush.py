@@ -49,7 +49,7 @@ class RushMain(commands.Cog):
                     raise ValueError("Error: Game Chosen is not Implemented")
                 views[iterator+1] = lookup.lookup_game_view(views[1].game_choice, game_choices, players)
             elif iterator == 2:
-                running_game_view = RunningGame("| Game Started! Click 'Start!' to start the game and click "
+                running_game_view = RunningGame("| Game Ready! Click 'Start!' to start the game and click "
                                                 "'Finished!' when you completed a goal",
                                                 players, views[iterator].goal_list,
                                                 views[iterator].pattern_choice, views[iterator].color,

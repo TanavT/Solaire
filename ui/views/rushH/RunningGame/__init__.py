@@ -62,6 +62,7 @@ class RunningGame(BaseView):
         await self.get_next(button, interaction, True)
 
     # Skip Button
+    # @discord.ui.button(label="Skip", style=discord.ButtonStyle.secondary, row=4)
     async def skip_callback(self, interaction):
         await self.get_next(None, interaction, False)
 
