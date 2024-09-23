@@ -2,7 +2,7 @@ import discord
 from ui.views.BaseView import BaseView
 import json
 import requests
-import cogs.helper.rushH.helper_funcs as helper
+import cogs.helper.general.helper_funcs as helper
 import random
 
 NUMBER_OF_REGIONS = 21

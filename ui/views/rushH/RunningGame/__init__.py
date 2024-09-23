@@ -4,7 +4,7 @@ import random
 # from discord.ui import Button
 import math
 import time
-import cogs.helper.rushH.helper_funcs as helper
+import cogs.helper.general.helper_funcs as helper
 
 
 class RunningGame(BaseView):
@@ -139,7 +139,7 @@ class RunningGame(BaseView):
         for player in self.player_and_scores:
             embed.add_field(name="Player | Score", value=f"{player[0]} | {player[1]}", inline=False)
 
-        embed.set_footer(text=f"{self.pattern} | Score to Win = {self.max_score} | This Goal's points ="
+        embed.set_footer(text=f"{self.pattern_list[0]} | Score to Win = {self.max_score} | This Goal's points ="
                               f" {self.__point_amount}")
         embed.set_author(name="Solaire of Astora")
         return embed

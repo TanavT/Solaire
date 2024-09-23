@@ -1,6 +1,6 @@
 import discord
 from ui.views.BaseView import BaseView
-import cogs.helper.rushH.helper_funcs as helper
+import cogs.helper.general.helper_funcs as helper
 
 
 class PlayerJoin(BaseView):
