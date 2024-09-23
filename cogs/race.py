@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from ui.views.PlayerJoin import PlayerJoin
+from ui.views.raceH.GameSettings import GameSettings
 
 views = None
 players = None
@@ -21,9 +22,10 @@ class Race(commands.Cog):
         players = MAX_SLOTS * [""]
 
         views = [PlayerJoin("| Waiting for Players...", players),
+                 GameSettings("| Game Settings... (Only Elden Ring is currently implemented)", players),
                  None]
 
-        await ctx.respond("| Starting Random Team Generator")
+        await ctx.respond("| Starting Race Mini-Game!")
 
         # running rush
         iterator = 0

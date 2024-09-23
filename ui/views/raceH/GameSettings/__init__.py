@@ -2,7 +2,7 @@ import discord
 from ui.views.BaseView import BaseView
 import cogs.helper.rushH.helper_funcs as helper
 
-NUM_CHOICES = 3
+NUM_CHOICES = 2
 
 
 class GameSettings(BaseView):
