@@ -81,10 +81,19 @@ class GameSettings(BaseView):
                 label="1"
             ),
             discord.SelectOption(
+                label="2"
+            ),
+            discord.SelectOption(
                 label="3"
             ),
             discord.SelectOption(
+                label="4"
+            ),
+            discord.SelectOption(
                 label="5"
+            ),
+            discord.SelectOption(
+                label="7"
             ),
             discord.SelectOption(
                 label="10"
