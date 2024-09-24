@@ -29,7 +29,7 @@ class EldenRing(BaseView):
                 label="Boss",
             ),
             discord.SelectOption(
-                label="Area",
+                label="Locations",
             ),
             discord.SelectOption(
                 label="Runes",
