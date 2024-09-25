@@ -45,12 +45,12 @@ class Race(commands.Cog):
                     await ctx.send("Could not find chosen game")
                     raise ValueError("Error: Game Chosen is not Implemented")
                 views[iterator+1] = lookup.lookup_game_view(views[1].game_choice, game_choices, players,
-                                                            views[iterator].difficulty)
+                                                            views[iterator].length_choice)
             elif iterator == 2:
                 running_game_view = RunningGame("| Game Ready! Click 'Start!' to start the game and click "
                                                 "'Finished!' when you completed a goal",
                                                 players, views[iterator].goal_list, views[iterator].color,
-                                                views[iterator-1].game_choice, views[iterator-1].difficulty)
+                                                views[iterator-1].game_choice, views[iterator].difficulty_choice)
                 views[iterator + 1] = running_game_view
             iterator += 1
 

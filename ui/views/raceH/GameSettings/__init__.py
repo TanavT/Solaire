@@ -11,7 +11,6 @@ class GameSettings(BaseView):
         self.__players_ready = []
         self.game_choice = None
         self.length_choice = None
-        self.difficulty = None
         self.__choices_made = NUM_CHOICES * [False]
 
     @discord.ui.select(
@@ -86,12 +85,6 @@ class GameSettings(BaseView):
             return
 
         if 0 not in self.__choices_made:
-            if self.length_choice == "Early Game":
-                self.difficulty = range(1, 13)
-            elif self.length_choice == "Mid Game":
-                self.difficulty = range(13, 26)
-            elif self.length_choice == "Late Game":
-                self.difficulty = range(26, 39)
             self.clear_items()
             await interaction.response.edit_message(content=f"| Game Settings:\n"
                                                             f"  Game = {self.game_choice}\n"

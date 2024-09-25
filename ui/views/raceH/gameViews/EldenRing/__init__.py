@@ -11,11 +11,17 @@ QUERY_URL = "http://localhost:3000/api/graphql"
 
 # output is list of goals found in goal_list, contains name, image, region, location, and difficulty
 class EldenRing(BaseView):
-    def __init__(self, message_str: str, player: list, difficulty: list):
+    def __init__(self, message_str: str, player: list, length: str):
         super().__init__(message_str, player, 300)
         self.__players_ready = []
         self.goal_choices = None
-        self.difficulty_choice = difficulty
+
+        if length == "Early Game":
+            self.difficulty_choice = range(1, 19)
+        elif length == "Mid Game":
+            self.difficulty_choice = range(19, 37)
+        elif length == "Late Game":
+            self.difficulty_choice = range(37, 53)
         self.__important_only = None
         self.goal_list = []
         self.__choices_made = NUM_CHOICES * [False]
