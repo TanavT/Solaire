@@ -16,6 +16,7 @@ bot = discord.Bot()
 def main() -> None:
     for cog in cogsList:
         bot.load_extension(f'cogs.{cog}')
+    print("Bot is running!")
     bot.run(token=TOKEN)
 
 

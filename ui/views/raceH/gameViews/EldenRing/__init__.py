@@ -4,7 +4,7 @@ import json
 import requests
 import cogs.helper.general.helper_funcs as helper
 
-NUM_CHOICES = 1
+NUM_CHOICES = 2
 # pulls from elden_ring database, elden ring api needs to be running during this
 QUERY_URL = "http://localhost:3000/api/graphql"
 
@@ -16,9 +16,11 @@ class EldenRing(BaseView):
         self.__players_ready = []
         self.goal_choices = None
         self.difficulty_choice = difficulty
+        self.__important_only = None
         self.goal_list = []
         self.__choices_made = NUM_CHOICES * [False]
         self.color = discord.Color.gold()
+
     @discord.ui.select(
         placeholder="Goal",
         min_values=1,
@@ -41,7 +43,31 @@ class EldenRing(BaseView):
         self.goal_choices = []
         for goal in select.values:
             self.goal_choices += [goal.lower()]
-        await self.update_settings(interaction, self.goal_choices)
+        await self.update_settings(interaction, self.goal_choices, self.__important_only)
+        # await interaction.response.send_message(f"Player '{str(interaction.user)}' chose goals: "
+        #                                         f"'{self.goal_choices}'",
+        #                                         delete_after=3)
+
+    @discord.ui.select(
+        placeholder="Important Goals Only?",
+        min_values=1,
+        max_values=1,
+        row=3,
+        options=[
+            discord.SelectOption(
+                label="Yes",
+                description="Only Major Goals in Game can be selected (ex. Remembrance Bosses) ",
+            ),
+            discord.SelectOption(
+                label="No",
+                description="Any Goal in Game can be selected",
+            )
+        ]
+    )
+    async def important_choice_callback(self, select, interaction):
+        self.__important_only = select.values[0]
+        self.__choices_made[1] = True
+        await self.update_settings(interaction, self.goal_choices, self.__important_only)
         # await interaction.response.send_message(f"Player '{str(interaction.user)}' chose goals: "
         #                                         f"'{self.goal_choices}'",
         #                                         delete_after=3)
@@ -63,11 +89,14 @@ class EldenRing(BaseView):
             return
 
         # needs to be nested loops when implementing choices other than bosses, will do later
+        important = ""
+        if self.__important_only == "Yes":
+            important = " important: true,"
         for goal in self.goal_choices:
             for difficulty in self.difficulty_choice:
                 query_request = f"""
                         query {{
-                            {goal}(difficulty: "{str(difficulty)}",  limit: 50) {{
+                            {goal}(difficulty: "{str(difficulty)}",{important}  limit: 50) {{
                                 name
                                 region
                                 location
@@ -82,11 +111,12 @@ class EldenRing(BaseView):
                     self.goal_list += responses_list
 
         # sorting goal_list and randomizing within difficulty groups
-        # self.print_list()
+        self.print_list()
         # ending view
         self.clear_items()
         await interaction.response.edit_message(content=f"| Elden Ring Settings:\n"
-                                                        f"  Goal = {self.goal_choices}",
+                                                        f"  Goal = {self.goal_choices}"
+                                                        f"  Important Goals = {self.__important_only}",
                                                         view=self)
         self.stop()
 

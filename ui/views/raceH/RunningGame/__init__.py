@@ -21,7 +21,7 @@ class RunningGame(BaseView):
             goal = random.randint(0, len(self.__goal_list))
             embed = discord.Embed(
                 title=self.__goal_list[goal]["name"],
-                description=f"{self.__goal_list[goal]["location"]}, {self.__goal_list[goal]["region"]}",
+                description=f"{self.__goal_list[goal]['location']}, {self.__goal_list[goal]['region']}",
                 color=self.color  # Pycord provides a class with default colors you can choose from
             )
             # embed.set_image(url=goal_url) # embed images take too long to pull
