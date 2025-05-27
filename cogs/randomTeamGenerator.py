@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from ui.views.PlayerJoin import PlayerJoin
 from ui.views.randomTeamGeneratorH.TeamSettings import TeamSettings
+from ui.views.randomTeamGeneratorH.TeamGeneration import TeamGeneration
 
 views = None
 players = None
@@ -27,7 +28,6 @@ class RandomTeamMain(commands.Cog):
 
         await ctx.respond("| Starting Random Team Generator")
 
-        # running rush
         iterator = 0
         for view in views:
             await ctx.send(content=view.message_str, view=view)
@@ -38,6 +38,10 @@ class RandomTeamMain(commands.Cog):
             if iterator == 0:
                 while "" in players:
                     players.remove("")
+            if iterator == 1:
+                num_of_teams = views[1].teams_choice
+                team_generator = TeamGeneration("| Generating Random Teams ...", players, num_of_teams)
+                views[iterator+1] = team_generator
             iterator += 1
 
 

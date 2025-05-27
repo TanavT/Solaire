@@ -24,7 +24,7 @@ class RunningGame(BaseView):
                 description=f"{self.__goal_list[goal]['location']}, {self.__goal_list[goal]['region']}",
                 color=self.color  # Pycord provides a class with default colors you can choose from
             )
-            # embed.set_image(url=goal_url) # embed images take too long to pull
+            embed.set_image(url=self.__goal_list[goal]['image']) # embed images take too long to pull
             for player in self.players:
                 embed.add_field(name="Player", value=f"{player}", inline=False)
 

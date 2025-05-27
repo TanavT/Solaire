@@ -102,7 +102,7 @@ class RunningGame(BaseView):
 
         new_goal = self.get_next_goal()
 
-        new_embed = self.get_embed(self.goal_list[new_goal]["name"], self.goal_list[new_goal]["region"],
+        new_embed = await self.get_embed(self.goal_list[new_goal]["name"], self.goal_list[new_goal]["region"],
                                    self.goal_list[new_goal]["location"], self.goal_list[new_goal]["image"])
 
         await interaction.response.edit_message(view=self, embed=new_embed)
@@ -129,13 +129,13 @@ class RunningGame(BaseView):
         self.__goal_num += 1
         return new_goal
 
-    def get_embed(self, goal_name: str, goal_region: str, goal_location: str, goal_url: str):
+    async def get_embed(self, goal_name: str, goal_region: str, goal_location: str, goal_url: str):
         embed = discord.Embed(
             title=f"Goal #{self.__goal_num}:\n{goal_name}",
             description=f"{goal_location}, {goal_region}",
             color=self.color  # Pycord provides a class with default colors you can choose from
         )
-        # embed.set_image(url=goal_url) # embed images take too long to pull
+        embed.set_image(url=goal_url) # embed images take too long to pull
         for player in self.player_and_scores:
             embed.add_field(name="Player | Score", value=f"{player[0]} | {player[1]}", inline=False)
 
