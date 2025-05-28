@@ -137,7 +137,7 @@ class RunningGame(BaseView):
         )
         embed.set_image(url=goal_url) # embed images take too long to pull
         for player in self.player_and_scores:
-            embed.add_field(name="Player | Score", value=f"{player[0]} | {player[1]}", inline=False)
+            embed.add_field(name="Player | Score", value=f"{player[0]} | {player[1]}", inline=True)
 
         embed.set_footer(text=f"{self.pattern_list[0]} | Score to Win = {self.max_score} | This Goal's points ="
                               f" {self.__point_amount}")

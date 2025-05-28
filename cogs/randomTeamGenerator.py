@@ -39,8 +39,9 @@ class RandomTeamMain(commands.Cog):
                 while "" in players:
                     players.remove("")
             if iterator == 1:
-                num_of_teams = views[1].teams_choice
-                team_generator = TeamGeneration("| Generating Random Teams ...", players, num_of_teams)
+                num_teams = views[1].teams_choice
+                team_generator = TeamGeneration("| Team Generation Ready! If you want to regenerate another "
+                                                "permutation, press the generation button again", players, num_teams)
                 views[iterator+1] = team_generator
             iterator += 1
 

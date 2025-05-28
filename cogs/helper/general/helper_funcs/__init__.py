@@ -44,7 +44,7 @@ def check_end_early(choices_made: list, current_user: str, players: list, player
     if current_user not in players_ready and current_user in players:
         players_ready += [current_user]
 
-    if len(players_ready) != player_count:
+    if len(players_ready) < (player_count + 1)//2:
         return False, True
 
     return False, False
