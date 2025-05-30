@@ -214,6 +214,30 @@ class TestingSpaceClass(commands.Cog):
         await ctx.author.send('Greetings!')
 
     @discord.slash_command()
+    async def with_arguments(self, ctx, arguments):
+        await ctx.author.send(arguments)
+        await ctx.respond("SENT!")
+
+    @discord.slash_command()
+    async def with_multiple_arguments(self, ctx, dice: int, number: int):
+        await ctx.author.send(f"{dice} dice, #{number}")
+        await ctx.respond(dice + number)
+
+    # from enum import Enum
+    # class Dice(Enum):
+    #     d4: 4
+    #     d6: 6
+    #     d8: 8
+    #     d10: 10
+    #     d12: 12
+    #     d20: 20
+    #
+    # @discord.slash_command()
+    # async def with_multiple_arguments_enum(self, ctx, dice: Dice, number: int):
+    #     await ctx.author.send(f"{dice} dice, #{number}")
+    #     await ctx.respond(number)
+
+    @discord.slash_command()
     async def timer(self, ctx):
         start_time = time.time()
         current_time = time.time()
