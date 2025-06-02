@@ -1,5 +1,4 @@
 import discord
-from async_timeout import timeout
 from discord.ext import commands
 import random
 
