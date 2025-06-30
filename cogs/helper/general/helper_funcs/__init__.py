@@ -44,6 +44,7 @@ def check_end_early(choices_made: list, current_user: str, players: list, player
     if current_user not in players_ready and current_user in players:
         players_ready += [current_user]
 
+    # no longer using this, any player can end by themselves
     if len(players_ready) < (player_count + 1)//2:
         return False, True
 
@@ -84,4 +85,13 @@ def convert_clock_to_seconds(clock_to_convert):
         current_power *= 60
 
     return sum_time_in_seconds
+def generate_embed(title: str, description: str, color: discord.Color, footer: str) -> discord.Embed:
+    embed = discord.Embed(
+        title= title,
+        description= description,
+        color= color
+    )
+    embed.set_footer(text=footer)
+    embed.set_author(name="Solaire of Astora")
+    return embed
 
