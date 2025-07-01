@@ -1,6 +1,7 @@
 import discord
 from ui.views.BaseView import BaseView
 import random
+import cogs.helper.general.helper_funcs as helper
 # from discord.ui import Button
 
 
@@ -19,17 +20,19 @@ class RunningGame(BaseView):
             button.label = "Finished!"
 
             goal = random.randint(0, len(self.__goal_list))
-            embed = discord.Embed(
-                title=self.__goal_list[goal]["name"],
-                description=f"{self.__goal_list[goal]['location']}, {self.__goal_list[goal]['region']}",
-                color=self.color  # Pycord provides a class with default colors you can choose from
-            )
+            # embed = discord.Embed(
+            #     title=self.__goal_list[goal]["name"],
+            #     description=f"{self.__goal_list[goal]['location']}, {self.__goal_list[goal]['region']}",
+            #     color=self.color  # Pycord provides a class with default colors you can choose from
+            #
+            embed = helper.generate_embed(self.__goal_list[goal]["name"], f"{self.__goal_list[goal]['location']}, {self.__goal_list[goal]['region']}",
+                                   self.color, f"Game = {self.game} | First to complete this goal wins!")
             embed.set_image(url=self.__goal_list[goal]['image']) # embed images take too long to pull
             for player in self.players:
                 embed.add_field(name="Player", value=f"{player}", inline=False)
 
-            embed.set_footer(text=f"Game = {self.game} | First to complete this goal wins!")
-            embed.set_author(name="Solaire of Astora")
+            # embed.set_footer(text=f"Game = {self.game} | First to complete this goal wins!")
+            # embed.set_author(name="Solaire of Astora")
             await interaction.response.edit_message(view=self, embed=embed)
         else:
             self.clear_items()

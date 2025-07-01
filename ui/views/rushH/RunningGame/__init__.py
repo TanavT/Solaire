@@ -130,18 +130,21 @@ class RunningGame(BaseView):
         return new_goal
 
     async def get_embed(self, goal_name: str, goal_region: str, goal_location: str, goal_url: str):
-        embed = discord.Embed(
-            title=f"Goal #{self.__goal_num}:\n{goal_name}",
-            description=f"{goal_location}, {goal_region}",
-            color=self.color  # Pycord provides a class with default colors you can choose from
-        )
+        # embed = discord.Embed(
+        #     title=f"Goal #{self.__goal_num}:\n{goal_name}",
+        #     description=f"{goal_location}, {goal_region}",
+        #     color=self.color  # Pycord provides a class with default colors you can choose from
+        # )
+        embed = helper.generate_embed(f"Goal #{self.__goal_num}:\n{goal_name}",f"{goal_location}, {goal_region}",
+                                       self.color, f"{self.pattern_list[0]} | Score to Win = {self.max_score} | This Goal's points ="
+                                        f" {self.__point_amount}")
         embed.set_image(url=goal_url) # embed images take too long to pull
         for player in self.player_and_scores:
             embed.add_field(name="Player | Score", value=f"{player[0]} | {player[1]}", inline=True)
 
-        embed.set_footer(text=f"{self.pattern_list[0]} | Score to Win = {self.max_score} | This Goal's points ="
-                              f" {self.__point_amount}")
-        embed.set_author(name="Solaire of Astora")
+        # embed.set_footer(text=f"{self.pattern_list[0]} | Score to Win = {self.max_score} | This Goal's points ="
+        #                       f" {self.__point_amount}")
+        # embed.set_author(name="Solaire of Astora")
         return embed
 
     async def game_end(self, interaction: discord.Interaction):
